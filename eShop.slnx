@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Элементы решения/">
+    <File Path="README.md" />
+  </Folder>
   <Folder Name="/Shared/">
     <Project Path="eShop.Shared.Interfaces\eShop.Shared.Interfaces.csproj" />
   </Folder>

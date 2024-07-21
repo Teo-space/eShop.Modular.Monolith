@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <ProjectReference Include="..\eShop.Products.Domain\eShop.Products.Domain.csproj" />
+	  <ProjectReference Include="..\eShop.Products.Models\eShop.Products.Models.csproj" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <Folder Include="Models\" />
+	  <Folder Include="Repositories\" />
+	  <Folder Include="ServicesExternal\" />
+	</ItemGroup>
+	
+</Project>

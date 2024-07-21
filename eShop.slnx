@@ -1,0 +1,28 @@
+<Solution>
+  <Folder Name="/Shared/">
+    <Project Path="eShop.Shared.Interfaces\eShop.Shared.Interfaces.csproj" />
+  </Folder>
+  <Folder Name="/Services/Payments/" />
+  <Folder Name="/Services/Orders/">
+    <Project Path="eShop.Order.Domain\eShop.Order.Domain.csproj" />
+    <Project Path="eShop.Order.Interfaces\eShop.Order.Interfaces.csproj" />
+  </Folder>
+  <Folder Name="/Services/Deliveries/">
+    <Project Path="eShop.Deliveries.Domain\eShop.Deliveries.Domain.csproj" />
+    <Project Path="eShop.Deliveries.Interfaces\eShop.Deliveries.Interfaces.csproj" />
+  </Folder>
+  <Folder Name="/Services/Clients/">
+    <Project Path="eShop.Clients.Domain\eShop.Clients.Domain.csproj" />
+    <Project Path="eShop.Clients.Interfaces\eShop.Clients.Interfaces.csproj" />
+  </Folder>
+  <Folder Name="/Services/Catalog/Core/">
+    <Project Path="eShop.Products.Domain\eShop.Products.Domain.csproj" />
+    <Project Path="eShop.Products.Interfaces\eShop.Products.Interfaces.csproj" />
+    <Project Path="eShop.Products.Models\eShop.Products.Models.csproj" />
+    <Project Path="eShop.Products.Services\eShop.Products.Services.csproj" />
+  </Folder>
+  <Folder Name="/Services/Catalog/">
+    <Project Path="eShop.Products.Persistence\eShop.Products.Persistence.csproj" />
+  </Folder>
+  <Folder Name="/Services/" />
+</Solution>

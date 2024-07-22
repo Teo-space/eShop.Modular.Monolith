@@ -5,10 +5,21 @@
   <Folder Name="/Shared/">
     <Project Path="eShop.Shared.Interfaces\eShop.Shared.Interfaces.csproj" />
   </Folder>
-  <Folder Name="/Services/Payments/" />
+  <Folder Name="/Services/Payments/">
+    <Project Path="eShop.Payments.Domain\eShop.Payments.Domain.csproj" Type="Classic C#" />
+    <Project Path="eShop.Payments.Interfaces\eShop.Payments.Interfaces.csproj" Type="Classic C#" />
+  </Folder>
   <Folder Name="/Services/Orders/">
     <Project Path="eShop.Order.Domain\eShop.Order.Domain.csproj" />
     <Project Path="eShop.Order.Interfaces\eShop.Order.Interfaces.csproj" />
+  </Folder>
+  <Folder Name="/Services/Logistics/">
+    <Project Path="eShop.Logistics.Movement.Domain\eShop.Logistics.Movement.Domain.csproj" Type="Classic C#" />
+    <Project Path="eShop.Logistics.Storehouse.Domain\eShop.Logistics.Storehouse.Domain.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/Services/Inventory/" />
+  <Folder Name="/Services/Documents/">
+    <Project Path="eShop.Documents.Domain\eShop.Documents.Domain.csproj" Type="Classic C#" />
   </Folder>
   <Folder Name="/Services/Deliveries/">
     <Project Path="eShop.Deliveries.Domain\eShop.Deliveries.Domain.csproj" />

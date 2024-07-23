@@ -9,7 +9,7 @@ public class ProductListModel
 public class ProductParamModel
 {
     public int ParamId { get; set; }
-    public string Name { get; set; }
+    public string ParamName { get; set; }
 
     public IReadOnlyCollection<ValueModel> Values { get; set; } = Array.Empty<ValueModel>();
 }
@@ -20,6 +20,6 @@ public class ValueModel
 
     public bool IsSelected { get; set; }
 
-    public bool IsDisabled { get; set; }
+    public bool IsEnabled { get; set; }
 }
 

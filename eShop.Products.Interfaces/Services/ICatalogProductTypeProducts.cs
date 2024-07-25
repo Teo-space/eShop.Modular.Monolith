@@ -1,5 +1,5 @@
 ﻿using eShop.Products.Interfaces.Params.CatalogService;
-using eShop.Products.Models.Catalog;
+using eShop.Products.Models.Catalog.ProductList;
 
 namespace eShop.Products.Interfaces.Services;
 
@@ -8,5 +8,6 @@ public interface ICatalogProductTypeProducts
     /// <summary>
     /// Получение списка товаров по типу
     /// </summary>
-    Task<ProductListModel> GetProductTypeProducts(Guid productTypeId, IReadOnlyCollection<ProductFilterParam> filters);
+    Task<Result<ProductListModel>> GetProductTypeProducts(ProductParams param);
+
 }

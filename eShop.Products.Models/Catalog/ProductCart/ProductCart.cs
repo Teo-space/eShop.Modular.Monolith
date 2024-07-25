@@ -1,23 +1,20 @@
-﻿using eShop.Products.Domain.Interfaces;
+﻿namespace eShop.Products.Models.Catalog.ProductCart;
 
-namespace eShop.Products.Domain.Models;
-
-public class Product : IDeletable
+/// <summary>
+/// Карточка товара
+/// </summary>
+public class ProductCart
 {
     public Guid ProductId { get; set; }
-    public Guid ProductTypeId { get; set; }
-
-    public bool IsDeleted { get; set; }
 
     public Guid MakerId { get; set; }
-    public Maker Maker { get; set; }
+    public string MakerName { get; set; }
 
     public string Number { get; set; }
 
     public string Name { get; set; }
 
     public string Description { get; set; }
-
 
     /// <summary>
     /// Цена
@@ -32,6 +29,6 @@ public class Product : IDeletable
     /// </summary>
     public double Stars { get; set; }
 
-
-    public HashSet<ProductParamValue> ParamValues { get; set; }
+    public IReadOnlyCollection<ParamGroupModel> ParamGroups { get; set; } = Array.Empty<ParamGroupModel>();
 }
+

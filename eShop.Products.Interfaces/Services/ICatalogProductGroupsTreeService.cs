@@ -1,5 +1,5 @@
 ﻿using eShop.Products.Domain.Models;
-using eShop.Products.Models.Catalog;
+using eShop.Products.Models.Catalog.ProductGroups;
 
 namespace eShop.Products.Interfaces.Services;
 
@@ -13,5 +13,5 @@ public interface ICatalogProductGroupsTreeService
     /// <summary>
     /// Получение дерева товарных подгрупп
     /// </summary>
-    Task<ProductGroupTreeModel> GetProductGroupsTree();
+    Task<Result<ProductGroupTreeModel>> GetProductGroupsTree();
 }

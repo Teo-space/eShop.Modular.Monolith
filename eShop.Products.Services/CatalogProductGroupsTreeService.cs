@@ -1,7 +1,7 @@
 ﻿using eShop.Products.Domain.Models;
 using eShop.Products.Interfaces.DbContexts;
 using eShop.Products.Interfaces.Services;
-using eShop.Products.Models.Catalog;
+using eShop.Products.Models.Catalog.ProductGroups;
 using Microsoft.EntityFrameworkCore;
 
 namespace eShop.Products.Services;
@@ -11,7 +11,7 @@ internal class CatalogProductGroupsTreeService(ICatalogDbContext catalogDbContex
     public async Task<IReadOnlyCollection<ProductGroup>> GetProductGroups()
     => (await catalogDbContext.ProductGroups.AsNoTracking().ToArrayAsync());
 
-    public async Task<ProductGroupTreeModel> GetProductGroupsTree()
+    public async Task<Result<ProductGroupTreeModel>> GetProductGroupsTree()
     {
         var model = new ProductGroupTreeModel();
 

@@ -1,4 +1,4 @@
-﻿namespace eShop.Products.Models.Catalog;
+﻿namespace eShop.Products.Models.Catalog.ProductGroupTypes;
 
 public class ProductTypeModel
 {

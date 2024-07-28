@@ -75,12 +75,15 @@ internal class CatalogProductTypeProducts(ICatalogRepository catalogRepository) 
             .Select(group => new ProductParamGroupModel
             {
                 ParamGroupName = group.Key.Name,
-                Params = group.Select(paramValue => new ProductParamValueModel
+                Params = group
+                .Select(paramValue => new ProductParamValueModel
                 {
                     ParamId = paramValue.ParamId,
                     ParamName = paramValue.Param.Name,
                     Value = paramValue.Value,
-                }).ToArray()
+                })
+                .OrderBy(x => x.ParamName).ThenBy(x => x.Value)
+                .ToArray()
             }).ToArray()
         })
         .OrderBy(x => x.MakerName).ThenBy(x => x.Name)

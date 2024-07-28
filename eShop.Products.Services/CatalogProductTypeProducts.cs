@@ -71,7 +71,7 @@ internal class CatalogProductTypeProducts(ICatalogRepository catalogRepository) 
                 x.Param.ParamGroup.Name,
                 x.Param.ParamGroup.Order,
             })
-            .OrderBy(group => group.Key.Order)
+            .OrderBy(group => group.Key.Order).ThenBy(group => group.Key.Name)
             .Select(group => new ProductParamGroupModel
             {
                 ParamGroupName = group.Key.Name,

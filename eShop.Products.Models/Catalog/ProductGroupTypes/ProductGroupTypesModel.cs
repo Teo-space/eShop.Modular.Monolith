@@ -2,7 +2,7 @@
 
 public class ProductGroupTypesModel
 {
-    public Guid ProductGroupId { get; set; }
+    public int ProductGroupId { get; set; }
 
     public string Name { get; set; }
 

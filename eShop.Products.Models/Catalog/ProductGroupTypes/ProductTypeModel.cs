@@ -2,7 +2,7 @@
 
 public class ProductTypeModel
 {
-    public Guid ProductTypeId { get; set; }
+    public int ProductTypeId { get; set; }
 
     public string Name { get; set; }
 

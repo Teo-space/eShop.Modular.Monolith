@@ -4,10 +4,10 @@ namespace eShop.Products.Interfaces.Params.CatalogService;
 
 public record ProductParams
 {
-    public Guid ProductTypeId { get; set; }
+    public int ProductTypeId { get; set; }
     public ProductsSorting ProductsSorting { get; set; } = ProductsSorting.PriceAscending;
 
-    public IReadOnlyCollection<Guid> Makers { get; set; } = Array.Empty<Guid>();
+    public IReadOnlyCollection<int> Makers { get; set; } = Array.Empty<int>();
 
     public IReadOnlyCollection<ProductFilterParam> Params { get; set; } = Array.Empty<ProductFilterParam>();
 

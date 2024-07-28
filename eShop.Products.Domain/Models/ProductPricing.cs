@@ -6,7 +6,7 @@
 /// </summary>
 public class ProductPricing
 {
-    public Guid ProductId { get; set; }
+    public int ProductId { get; set; }
     public int RegionId { get; set; }
     public decimal Price { get; set; }
 }

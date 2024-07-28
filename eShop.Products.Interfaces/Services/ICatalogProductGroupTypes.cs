@@ -7,5 +7,5 @@ public interface ICatalogProductGroupTypes
     /// <summary>
     /// Получение списка типов товаров в товарной подгруппе
     /// </summary>
-    Task<Result<ProductGroupTypesModel>> GetProductGroupTypes(Guid productGroupId);
+    Task<Result<ProductGroupTypesModel>> GetProductGroupTypes(int productGroupId);
 }

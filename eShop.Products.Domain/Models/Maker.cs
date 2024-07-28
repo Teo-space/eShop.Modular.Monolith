@@ -2,7 +2,7 @@
 
 public class Maker
 {
-    public Guid MakerId { get; set; }
+    public int MakerId { get; set; }
 
     public string Name { get; set; }
 }

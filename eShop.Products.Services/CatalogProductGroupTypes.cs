@@ -1,6 +1,5 @@
 ﻿using eShop.Products.Interfaces.DbContexts;
 using eShop.Products.Interfaces.Services;
-using eShop.Products.Models.Catalog;
 using eShop.Products.Models.Catalog.ProductGroupTypes;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,7 +7,7 @@ namespace eShop.Products.Services;
 
 internal class CatalogProductGroupTypes(ICatalogDbContext catalogDbContext) : ICatalogProductGroupTypes
 {
-    public async Task<Result<ProductGroupTypesModel>> GetProductGroupTypes(Guid productGroupId)
+    public async Task<Result<ProductGroupTypesModel>> GetProductGroupTypes(int productGroupId)
     {
         var productGroup = await catalogDbContext.ProductGroups
             .AsNoTracking()

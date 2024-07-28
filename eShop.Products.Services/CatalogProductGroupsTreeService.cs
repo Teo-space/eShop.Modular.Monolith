@@ -19,7 +19,7 @@ internal class CatalogProductGroupsTreeService(ICatalogDbContext catalogDbContex
         model.TotalCount = productGroups.Count;
 
         model.ProductGroups = productGroups
-            .Where(x => x.ParentProductGroupId == Guid.Empty)
+            .Where(x => x.ParentProductGroupId == 0)
             .Select(productGroup => new ProductGroupModel()
             {
                 ProductGroupId = productGroup.ProductGroupId,

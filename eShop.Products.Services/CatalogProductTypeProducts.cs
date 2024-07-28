@@ -9,7 +9,7 @@ namespace eShop.Products.Services;
 
 internal class CatalogProductTypeProducts(ICatalogDbContext catalogDbContext) : ICatalogProductTypeProducts
 {
-    private async Task<ProductType> GetProductType(Guid productTypeId)
+    private async Task<ProductType> GetProductType(int productTypeId)
     {
         return await catalogDbContext.ProductTypes
             .AsNoTracking()
@@ -62,8 +62,8 @@ internal class CatalogProductTypeProducts(ICatalogDbContext catalogDbContext) : 
     }
 
 
-    private async Task<IReadOnlyCollection<Maker>> GetMakers(Guid productTypeId,
-        IReadOnlyCollection<Guid> makers,
+    private async Task<IReadOnlyCollection<Maker>> GetMakers(int productTypeId,
+        IReadOnlyCollection<int> makers,
         IReadOnlyCollection<ProductFilterParam> paramValues)
     {
         var productsQuery = catalogDbContext.Products
@@ -90,7 +90,7 @@ internal class CatalogProductTypeProducts(ICatalogDbContext catalogDbContext) : 
     }
 
     private IReadOnlyCollection<MakerModel> MapMakers(
-        IReadOnlyCollection<Guid> filterMakers,
+        IReadOnlyCollection<int> filterMakers,
         IReadOnlyCollection<Maker> allMakers,
         IReadOnlyCollection<Maker> filteredMakers)
     {
@@ -113,8 +113,8 @@ internal class CatalogProductTypeProducts(ICatalogDbContext catalogDbContext) : 
 
     private record ParamValue(int ParamId, string ParamName, string Value);
 
-    private async Task<IReadOnlyCollection<ParamValue>> GetParamValues(Guid productTypeId,
-        IReadOnlyCollection<Guid> makers,
+    private async Task<IReadOnlyCollection<ParamValue>> GetParamValues(int productTypeId,
+        IReadOnlyCollection<int> makers,
         IReadOnlyCollection<ProductFilterParam> paramValues)
     {
         var productsQuery = catalogDbContext.Products
@@ -198,10 +198,10 @@ internal class CatalogProductTypeProducts(ICatalogDbContext catalogDbContext) : 
         var productType = await GetProductType(param.ProductTypeId);
         var products = await GetProducts(param);
 
-        var allMakers = await GetMakers(param.ProductTypeId, Array.Empty<Guid>(), Array.Empty<ProductFilterParam>());
+        var allMakers = await GetMakers(param.ProductTypeId, Array.Empty<int>(), Array.Empty<ProductFilterParam>());
         var filteredMakers = await GetMakers(param.ProductTypeId, param.Makers, param.Params);
 
-        var allParamValues = await GetParamValues(param.ProductTypeId, Array.Empty<Guid>(), Array.Empty<ProductFilterParam>());
+        var allParamValues = await GetParamValues(param.ProductTypeId, Array.Empty<int>(), Array.Empty<ProductFilterParam>());
         var filteredParamValues = await GetParamValues(param.ProductTypeId, param.Makers, param.Params);
 
         var model = new ProductListModel();

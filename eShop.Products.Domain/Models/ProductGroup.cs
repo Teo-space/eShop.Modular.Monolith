@@ -4,9 +4,9 @@ namespace eShop.Products.Domain.Models;
 
 public class ProductGroup : IDeletable
 {
-    public Guid ProductGroupId { get; set; }
+    public int ProductGroupId { get; set; }
 
-    public Guid ParentProductGroupId { get; set; }
+    public int ParentProductGroupId { get; set; }
 
     public bool IsDeleted { get; set; }
 

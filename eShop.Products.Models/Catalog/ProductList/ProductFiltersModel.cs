@@ -2,11 +2,11 @@
 
 public sealed class ProductFiltersModel
 {
-    public IReadOnlyCollection<MakerModel> Makers { get; set; } = Array.Empty<MakerModel>();
-    public IReadOnlyCollection<ProductParamModel> Params { get; set; } = Array.Empty<ProductParamModel>();
+    public IReadOnlyCollection<MakerFilterModel> Makers { get; set; } = Array.Empty<MakerFilterModel>();
+    public IReadOnlyCollection<ProductParamFilterModel> Params { get; set; } = Array.Empty<ProductParamFilterModel>();
 }
 
-public sealed class MakerModel
+public sealed class MakerFilterModel
 {
     public int Id { get; set; }
     public string Name { get; set; }
@@ -16,15 +16,15 @@ public sealed class MakerModel
     public bool IsEnabled { get; set; }
 }
 
-public sealed class ProductParamModel
+public sealed class ProductParamFilterModel
 {
     public int ParamId { get; set; }
     public string ParamName { get; set; }
 
-    public IReadOnlyCollection<ValueModel> Values { get; set; } = Array.Empty<ValueModel>();
+    public IReadOnlyCollection<ValueFilterModel> Values { get; set; } = Array.Empty<ValueFilterModel>();
 }
 
-public sealed class ValueModel
+public sealed class ValueFilterModel
 {
     public string Value { get; set; }
 

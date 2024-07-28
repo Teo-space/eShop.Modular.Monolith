@@ -1,4 +1,4 @@
-﻿namespace eShop.Products.Interfaces.Params.CatalogService;
+﻿namespace eShop.Products.Interfaces.Params.Catalog;
 
 public class ProductFilterParam
 {

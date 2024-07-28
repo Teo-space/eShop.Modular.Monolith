@@ -8,6 +8,7 @@ public class Param : IDeletable
     public int ParamId { get; set; }
 
     public int ParamGroupId { get; set; }
+    public ParamGroup ParamGroup { get; set; }
 
     public bool IsDeleted { get; set; }
 

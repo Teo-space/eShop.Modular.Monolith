@@ -1,49 +1,50 @@
 ﻿using eShop.Products.Domain.Models;
-using eShop.Products.Interfaces.DbContexts;
-using eShop.Products.Interfaces.Params.CatalogService;
+using eShop.Products.Interfaces.Models;
+using eShop.Products.Interfaces.Params.Catalog;
+using eShop.Products.Interfaces.Repositories;
 using eShop.Products.Interfaces.Services;
 using eShop.Products.Models.Catalog.ProductList;
-using Microsoft.EntityFrameworkCore;
 
 namespace eShop.Products.Services;
 
-internal class CatalogProductTypeProducts(ICatalogDbContext catalogDbContext) : ICatalogProductTypeProducts
+internal class CatalogProductTypeProducts(ICatalogRepository catalogRepository) : ICatalogProductTypeProducts
 {
-    private async Task<ProductType> GetProductType(int productTypeId)
+    public async Task<Result<ProductListModel>> GetProductTypeProducts(ProductParams param)
     {
-        return await catalogDbContext.ProductTypes
-            .AsNoTracking()
-            .Where(x => x.ProductTypeId == productTypeId)
-            .FirstOrDefaultAsync()
-            ?? throw new KeyNotFoundApiException($"Not Found By Id {productTypeId}");
+        var productType = await catalogRepository.GetProductType(param.ProductTypeId);
+        var products = await catalogRepository.GetProducts(param);
+
+        var emptyParams = param with
+        {
+            Makers = Array.Empty<int>(),
+            Params = Array.Empty<ProductFilterParam>(),
+            HasStars = false,
+            HasReviews = false,
+        };
+
+        var allMakers = await catalogRepository.GetMakersFilters(emptyParams);
+        var filteredMakers = await catalogRepository.GetMakersFilters(param);
+
+        var allParamValues = await catalogRepository.GetParamValuesFilters(emptyParams);
+        var filteredParamValues = await catalogRepository.GetParamValuesFilters(param);
+
+        var model = new ProductListModel();
+
+        model.PageNumber = param.PageNumber;
+        model.PageSize = param.PageSize;
+        model.TotalCount = await catalogRepository.GetProductsTotalCount(param);
+        model.CurrentCount = products.Count;
+
+        ///Формируем выходную модель товаров
+        model.Products = MapProducts(products);
+        //Список фильтров - производитель
+        model.Filters.Makers = MapMakers(param.Makers, allMakers, filteredMakers);
+        ///Выходной набор фильтров
+        model.Filters.Params = MapParamValues(allParamValues, filteredParamValues, param.Params);
+
+        return model;
     }
 
-    private async Task<IReadOnlyCollection<Product>> GetProducts(ProductParams param)
-    {
-        var productsQuery = catalogDbContext.Products
-            .AsNoTracking()
-            .Where(x => x.ProductTypeId == param.ProductTypeId)
-            .Include(x => x.Maker)
-            .AsQueryable();
-
-        if (param.Makers.Any())
-        {
-            productsQuery = productsQuery.Where(x => param.Makers.Contains(x.MakerId));
-        }
-
-        foreach (var filter in param.Params)
-        {
-            productsQuery = productsQuery
-                .Where(p => p.ParamValues.Any(pv => filter.ParamId == pv.ParamId && filter.Values.Contains(pv.Value)));
-        }
-
-        int skip = ((param.PageNumber >=1 ? param.PageNumber : 1) - 1) * param.PageSize;
-
-        return await productsQuery
-            .OrderBy(x => x.Maker.Name).ThenBy(x => x.Name)
-            .Skip(skip).Take(param.PageSize)
-            .ToArrayAsync();
-    }
 
     private IReadOnlyCollection<ProductModel> MapProducts(IReadOnlyCollection<Product> products)
     {
@@ -56,46 +57,43 @@ internal class CatalogProductTypeProducts(ICatalogDbContext catalogDbContext) : 
             Number = x.Number,
             Name = x.Name,
             Description = x.Description,
+            Price = x.Price,
+            Availability = x.Availability,
+            SalesCount = x.SalesCount,
+            Stars = x.Stars,
+            StarsCount = x.StarsCount,
+            ReviewsCount = x.ReviewsCount,
+
+            ParamGroups = x.ParamValues
+            .GroupBy(x => new
+            {
+                x.Param.ParamGroup.ParamGroupId,
+                x.Param.ParamGroup.Name,
+                x.Param.ParamGroup.Order,
+            })
+            .OrderBy(group => group.Key.Order)
+            .Select(group => new ProductParamGroupModel
+            {
+                ParamGroupName = group.Key.Name,
+                Params = group.Select(paramValue => new ProductParamValueModel
+                {
+                    ParamId = paramValue.ParamId,
+                    ParamName = paramValue.Param.Name,
+                    Value = paramValue.Value,
+                }).ToArray()
+            }).ToArray()
         })
         .OrderBy(x => x.MakerName).ThenBy(x => x.Name)
         .ToArray();
     }
 
-
-    private async Task<IReadOnlyCollection<Maker>> GetMakers(int productTypeId,
-        IReadOnlyCollection<int> makers,
-        IReadOnlyCollection<ProductFilterParam> paramValues)
-    {
-        var productsQuery = catalogDbContext.Products
-            .AsNoTracking()
-            .Where(x => x.ProductTypeId == productTypeId)
-            .Include(x => x.Maker)
-            .AsQueryable();
-
-        if (makers.Any())
-        {
-            productsQuery = productsQuery.Where(x => makers.Contains(x.MakerId));
-        }
-
-        foreach (var filter in paramValues)
-        {
-            productsQuery = productsQuery
-                .Where(p => p.ParamValues.Any(pv => filter.ParamId == pv.ParamId && filter.Values.Contains(pv.Value)));
-        }
-
-        return productsQuery
-            .Select(p => p.Maker)
-            .Distinct()
-            .ToArray();
-    }
-
-    private IReadOnlyCollection<MakerModel> MapMakers(
+    private IReadOnlyCollection<MakerFilterModel> MapMakers(
         IReadOnlyCollection<int> filterMakers,
         IReadOnlyCollection<Maker> allMakers,
         IReadOnlyCollection<Maker> filteredMakers)
     {
         var resultMakers = allMakers
-            .Select(x => new MakerModel
+            .Select(x => new MakerFilterModel
             {
                 Id = x.MakerId,
                 Name = x.Name,
@@ -111,48 +109,9 @@ internal class CatalogProductTypeProducts(ICatalogDbContext catalogDbContext) : 
         return resultMakers;
     }
 
-    private record ParamValue(int ParamId, string ParamName, string Value);
-
-    private async Task<IReadOnlyCollection<ParamValue>> GetParamValues(int productTypeId,
-        IReadOnlyCollection<int> makers,
-        IReadOnlyCollection<ProductFilterParam> paramValues)
-    {
-        var productsQuery = catalogDbContext.Products
-            .AsNoTracking()
-            .Where(x => x.ProductTypeId == productTypeId);
-
-        if (makers.Any())
-        {
-            productsQuery = productsQuery.Where(x => makers.Contains(x.MakerId));
-        }
-
-        foreach (var filter in paramValues)
-        {
-            productsQuery = productsQuery
-                .Where(p => p.ParamValues.Any(pv => filter.ParamId == pv.ParamId && filter.Values.Contains(pv.Value)));
-        }
-
-        //Получаем уникальные параметры товаров
-        var results = await productsQuery
-            .Include(x => x.ParamValues).ThenInclude(pv => pv.Param)
-            .SelectMany(x => x.ParamValues)
-            .Select(x => new
-            {
-                x.ParamId,
-                x.Param.Name,
-                x.Value,
-            })
-            .Distinct()
-            .Select(x => new ParamValue(x.ParamId, x.Name, x.Value))
-            .OrderBy(x => x.ParamName).ThenBy(x => x.Value)
-            .ToArrayAsync();
-
-        return results;
-    }
-
-    private IReadOnlyCollection<ProductParamModel> MapParamValues(
-        IReadOnlyCollection<ParamValue> allParamValues,
-        IReadOnlyCollection<ParamValue> filteredParamValues,
+    private IReadOnlyCollection<ProductParamFilterModel> MapParamValues(
+        IReadOnlyCollection<ParamValueFilterModel> allParamValues,
+        IReadOnlyCollection<ParamValueFilterModel> filteredParamValues,
         IReadOnlyCollection<ProductFilterParam> filters)
     {
         var results = allParamValues
@@ -161,13 +120,13 @@ internal class CatalogProductTypeProducts(ICatalogDbContext catalogDbContext) : 
                 x.ParamId,
                 x.ParamName,
             })
-            .Select(group => new ProductParamModel
+            .Select(group => new ProductParamFilterModel
             {
                 ParamId = group.Key.ParamId,
                 ParamName = group.Key.ParamName,
 
                 Values = group
-                .Select(x => new ValueModel
+                .Select(x => new ValueFilterModel
                 {
                     Value = x.Value,
                 }).ToArray()
@@ -190,31 +149,6 @@ internal class CatalogProductTypeProducts(ICatalogDbContext catalogDbContext) : 
         }
 
         return results;
-    }
-
-
-    public async Task<Result<ProductListModel>> GetProductTypeProducts(ProductParams param)
-    {
-        var productType = await GetProductType(param.ProductTypeId);
-        var products = await GetProducts(param);
-
-        var allMakers = await GetMakers(param.ProductTypeId, Array.Empty<int>(), Array.Empty<ProductFilterParam>());
-        var filteredMakers = await GetMakers(param.ProductTypeId, param.Makers, param.Params);
-
-        var allParamValues = await GetParamValues(param.ProductTypeId, Array.Empty<int>(), Array.Empty<ProductFilterParam>());
-        var filteredParamValues = await GetParamValues(param.ProductTypeId, param.Makers, param.Params);
-
-        var model = new ProductListModel();
-        model.CurrentCount = products.Count;
-
-        ///Формируем выходную модель товаров
-        model.Products = MapProducts(products);
-        //Список фильтров - производитель
-        model.Filters.Makers = MapMakers(param.Makers, allMakers, filteredMakers);
-        ///Выходной набор фильтров
-        model.Filters.Params = MapParamValues(allParamValues, filteredParamValues, param.Params);
-
-        return model;
     }
 
 }

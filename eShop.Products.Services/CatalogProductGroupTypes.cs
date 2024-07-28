@@ -1,30 +1,16 @@
-﻿using eShop.Products.Interfaces.DbContexts;
+﻿using eShop.Products.Interfaces.Repositories;
 using eShop.Products.Interfaces.Services;
 using eShop.Products.Models.Catalog.ProductGroupTypes;
-using Microsoft.EntityFrameworkCore;
 
 namespace eShop.Products.Services;
 
-internal class CatalogProductGroupTypes(ICatalogDbContext catalogDbContext) : ICatalogProductGroupTypes
+internal class CatalogProductGroupTypes(ICatalogRepository catalogRepository) : ICatalogProductGroupTypes
 {
     public async Task<Result<ProductGroupTypesModel>> GetProductGroupTypes(int productGroupId)
     {
-        var productGroup = await catalogDbContext.ProductGroups
-            .AsNoTracking()
-            .Where(x => x.ProductGroupId == productGroupId)
-            .FirstOrDefaultAsync()
-            ?? throw new KeyNotFoundApiException($"Not Found By Id {productGroupId}");
+        var productGroup = await catalogRepository.GetProductGroup(productGroupId);
 
-        var productTypes = await catalogDbContext.ProductTypes
-            .AsNoTracking()
-            .Where(x => x.ProductGroupId == productGroupId)
-            .OrderBy(x => x.Name)
-            .Select(x => new ProductTypeModel
-            {
-                ProductTypeId = x.ProductTypeId,
-                Name = x.Name,
-                Description = x.Description,
-            }).ToArrayAsync();
+        var productTypes = await catalogRepository.GetProductTypes(productGroupId);
 
         var model = new ProductGroupTypesModel
         {
@@ -33,9 +19,14 @@ internal class CatalogProductGroupTypes(ICatalogDbContext catalogDbContext) : IC
             Description = productGroup.Description,
 
             Types = productTypes
+            .Select(x => new ProductTypeModel
+            {
+                ProductTypeId = x.ProductTypeId,
+                Name = x.Name,
+                Description = x.Description,
+            }).ToArray()
         };
 
         return model;
     }
-
 }

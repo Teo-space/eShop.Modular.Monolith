@@ -24,8 +24,6 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <Folder Include="Models\" />
-	  <Folder Include="Repositories\" />
 	  <Folder Include="ServicesExternal\" />
 	</ItemGroup>
 	

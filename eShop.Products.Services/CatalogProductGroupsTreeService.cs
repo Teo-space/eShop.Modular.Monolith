@@ -1,21 +1,19 @@
 ﻿using eShop.Products.Domain.Models;
-using eShop.Products.Interfaces.DbContexts;
+using eShop.Products.Interfaces.Repositories;
 using eShop.Products.Interfaces.Services;
 using eShop.Products.Models.Catalog.ProductGroups;
-using Microsoft.EntityFrameworkCore;
 
 namespace eShop.Products.Services;
 
-internal class CatalogProductGroupsTreeService(ICatalogDbContext catalogDbContext) : ICatalogProductGroupsTreeService
+internal class CatalogProductGroupsTreeService(ICatalogRepository catalogRepository) : ICatalogProductGroupsTreeService
 {
-    public async Task<IReadOnlyCollection<ProductGroup>> GetProductGroups()
-    => (await catalogDbContext.ProductGroups.AsNoTracking().ToArrayAsync());
+    public Task<IReadOnlyCollection<ProductGroup>> GetProductGroups() => catalogRepository.GetProductGroups();
 
     public async Task<Result<ProductGroupTreeModel>> GetProductGroupsTree()
     {
         var model = new ProductGroupTreeModel();
 
-        var productGroups = await GetProductGroups();
+        var productGroups = await catalogRepository.GetProductGroups();
         model.TotalCount = productGroups.Count;
 
         model.ProductGroups = productGroups
@@ -32,7 +30,7 @@ internal class CatalogProductGroupsTreeService(ICatalogDbContext catalogDbContex
         List<ProductGroupModel> levelResults = new List<ProductGroupModel>(model.ProductGroups);
         List<ProductGroupModel> nextLevelResults = new List<ProductGroupModel>();
 
-        while (levelResults.Any())
+        while (levelResults.NotEmpty())
         {
             foreach (var productGroup in levelResults)
             {
@@ -47,7 +45,7 @@ internal class CatalogProductGroupsTreeService(ICatalogDbContext catalogDbContex
                     .OrderBy(x => x.Name)
                     .ToArray();
 
-                if (childs.Any())
+                if (childs.NotEmpty())
                 {
                     productGroup.Childs = childs;
                     nextLevelResults.AddRange(childs);
@@ -55,7 +53,7 @@ internal class CatalogProductGroupsTreeService(ICatalogDbContext catalogDbContex
             }
 
             levelResults.Clear();
-            if (nextLevelResults.Any())
+            if (nextLevelResults.NotEmpty())
             {
                 levelResults.AddRange(nextLevelResults);
                 nextLevelResults.Clear();

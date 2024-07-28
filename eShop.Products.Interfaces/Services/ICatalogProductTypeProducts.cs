@@ -1,4 +1,4 @@
-﻿using eShop.Products.Interfaces.Params.CatalogService;
+﻿using eShop.Products.Interfaces.Params.Catalog;
 using eShop.Products.Models.Catalog.ProductList;
 
 namespace eShop.Products.Interfaces.Services;

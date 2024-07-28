@@ -27,10 +27,23 @@ public class Product : IDeletable
     /// Наличие в магазинах
     /// </summary>
     public int Availability { get; set; }
+
+    /// <summary>
+    /// Средняя оценка в отзывах
+    /// </summary>
+    public double SalesCount { get; set; }
     /// <summary>
     /// Средняя оценка в отзывах
     /// </summary>
     public double Stars { get; set; }
+    /// <summary>
+    /// Количество оценок
+    /// </summary>
+    public int StarsCount { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int ReviewsCount { get; set; }
 
 
     public HashSet<ProductParamValue> ParamValues { get; set; }

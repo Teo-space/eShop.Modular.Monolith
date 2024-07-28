@@ -1,10 +1,11 @@
 ﻿using eShop.Products.Interfaces.Enum;
 
-namespace eShop.Products.Interfaces.Params.CatalogService;
+namespace eShop.Products.Interfaces.Params.Catalog;
 
 public record ProductParams
 {
     public int ProductTypeId { get; set; }
+
     public ProductsSorting ProductsSorting { get; set; } = ProductsSorting.PriceAscending;
 
     public IReadOnlyCollection<int> Makers { get; set; } = Array.Empty<int>();
@@ -16,7 +17,6 @@ public record ProductParams
 
     //Наличие: В наличии, сегодня, завтра
 
-    // HasStars
-
-    //HasReviews
+    public bool HasStars { get; set; }
+    public bool HasReviews { get; set; }
 }

@@ -10,4 +10,19 @@
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="NUlid" Version="1.7.2" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <Folder Include="DbContexts\" />
+	  <Folder Include="Repositories\" />
+	  <Folder Include="Params\" />
+	  <Folder Include="Models\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\eShop.Clients.Domain\eShop.Clients.Domain.csproj" />
+	</ItemGroup>
+
 </Project>

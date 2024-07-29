@@ -14,6 +14,9 @@
     <Project Path="eShop.Documents.Domain\eShop.Documents.Domain.csproj" />
   </Folder>
   <Folder Name="/Internal/" />
+  <Folder Name="/External/Reviews/">
+    <Project Path="eShop.Reviews.Domain\eShop.Reviews.Domain.csproj" Type="Classic C#" />
+  </Folder>
   <Folder Name="/External/Payments/">
     <Project Path="eShop.Payments.Domain\eShop.Payments.Domain.csproj" />
     <Project Path="eShop.Payments.Interfaces\eShop.Payments.Interfaces.csproj" />
@@ -40,8 +43,8 @@
     <Project Path="eShop.Products.Persistence\eShop.Products.Persistence.csproj" />
   </Folder>
   <Folder Name="/External/Basket/">
-    <Project Path="eShop.Basket.Domain\eShop.Basket.Domain.csproj" Type="Classic C#" />
-    <Project Path="eShop.Basket.Interfaces\eShop.Basket.Interfaces.csproj" Type="Classic C#" />
+    <Project Path="eShop.Basket.Domain\eShop.Basket.Domain.csproj" />
+    <Project Path="eShop.Basket.Interfaces\eShop.Basket.Interfaces.csproj" />
   </Folder>
   <Folder Name="/External/" />
 </Solution>

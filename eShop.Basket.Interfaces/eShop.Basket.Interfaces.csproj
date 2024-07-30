@@ -13,4 +13,8 @@
     <Folder Include="Repositories\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\eShop.Basket.Domain\eShop.Basket.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

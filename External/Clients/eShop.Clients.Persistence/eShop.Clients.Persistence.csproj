@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
+		<Nullable>disable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -12,20 +12,12 @@
 
 	<ItemGroup>
 		<PackageReference Include="Results" Version="8.0.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="NUlid" Version="1.7.2" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Params\" />
-	  <Folder Include="Models\" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <ProjectReference Include="..\eShop.Clients.Domain\eShop.Clients.Domain.csproj" />
+	  <ProjectReference Include="..\eShop.Clients.Interfaces\eShop.Clients.Interfaces.csproj" />
 	</ItemGroup>
 
 </Project>

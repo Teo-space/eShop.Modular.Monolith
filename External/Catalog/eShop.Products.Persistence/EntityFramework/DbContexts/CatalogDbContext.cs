@@ -27,6 +27,7 @@ internal class CatalogDbContext : DbContext, ICatalogDbContext
     public CatalogDbContext(DbContextOptions options) : base(options)
     {
     }
+
 #if DEBUG
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -36,6 +37,7 @@ internal class CatalogDbContext : DbContext, ICatalogDbContext
         optionsBuilder.LogTo(Console.WriteLine, minimumLevel: Microsoft.Extensions.Logging.LogLevel.Information);
     }
 #endif
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

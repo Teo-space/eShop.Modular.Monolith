@@ -1,48 +1,10 @@
-﻿using eShop.Clients.Domain;
+﻿using eShop.Clients.Domain.Models;
 using NUlid;
 
 namespace eShop.Clients.Interfaces.Services;
 
 public interface IClientService
 {
-    /// <summary>
-    /// Создание клиента
-    /// </summary>
-    /// <param name="firstName"></param>
-    /// <param name="lastName"></param>
-    /// <param name="patronymic"></param>
-    /// <returns></returns>
-    public Task<Client> Create(long phone, string firstName, string lastName, string patronymic);
-    /// <summary>
-    /// Смена номера телефона
-    /// </summary>
-    /// <param name="clientId"></param>
-    /// <param name="phone"></param>
-    /// <returns>Ulid token id for Accept</returns>
-    public Task<Ulid> UpdatePhone(long clientId, long phone);
-    /// <summary>
-    /// Подтверждение токена смены телефона
-    /// </summary>
-    /// <param name="clientId"></param>
-    /// <param name="token"></param>
-    /// <returns></returns>
-    public Task<Client> AcceptPhone(long clientId, Ulid token);
-
-    /// <summary>
-    /// Смена адреса почты
-    /// </summary>
-    /// <param name="clientId"></param>
-    /// <param name="email"></param>
-    /// <returns>Ulid token id for Accept</returns>
-    public Task<Ulid> UpdatePhone(long clientId, string email);
-    /// <summary>
-    /// Подтверждение токена смены телефона
-    /// </summary>
-    /// <param name="clientId"></param>
-    /// <param name="token"></param>
-    /// <returns></returns>
-    public Task<Client> AcceptEmail(long clientId, Ulid token);
-
     /// <summary>
     /// Получить клиента по ид
     /// </summary>
@@ -62,6 +24,16 @@ public interface IClientService
     /// <returns></returns>
     public Task<Client> GetByEmail(string email);
 
+
+    /// <summary>
+    /// Создание клиента
+    /// </summary>
+    /// <param name="firstName"></param>
+    /// <param name="lastName"></param>
+    /// <param name="patronymic"></param>
+    /// <returns></returns>
+    public Task<Client> Create(long phone, string userName, string firstName, string lastName, string patronymic);
+
     /// <summary>
     /// смена основных данных
     /// </summary>
@@ -70,7 +42,32 @@ public interface IClientService
     /// <param name="lastName"></param>
     /// <param name="patronymic"></param>
     /// <returns></returns>
-    public Task<Client> Update(long clientId, string firstName, string lastName, string patronymic);
+    public Task<Client> UpdateNames(long clientId, string firstName, string lastName, string patronymic);
+
+
+    /// <summary>
+    /// Смена номера телефона
+    /// </summary>
+    /// <param name="clientId"></param>
+    /// <param name="phone"></param>
+    /// <returns>Ulid token id for Accept</returns>
+    public Task<Ulid> UpdatePhone(long clientId, long phone);
+
+    /// <summary>
+    /// Смена адреса почты
+    /// </summary>
+    /// <param name="clientId"></param>
+    /// <param name="email"></param>
+    /// <returns>Ulid token id for Accept</returns>
+    public Task<Ulid> UpdateEmail(long clientId, string email);
+
+    /// <summary>
+    /// Выполнение действия в токене
+    /// </summary>
+    /// <param name="clientId"></param>
+    /// <param name="token"></param>
+    public Task<Ulid> AcceptToken(long clientId, Ulid token);
+
 
     /// <summary>
     /// 

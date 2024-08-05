@@ -1,11 +1,12 @@
 ﻿using eShop.Clients.Domain.Models;
-using NUlid;
 
 namespace eShop.Clients.Interfaces.Repositories;
 
 public interface ITokenRepository
 {
-    Task<Result<ClientToken>> GetTokenAsync(long clientId, Ulid tokenId);
+    Task<Result<ClientToken>> GetTokenAsync(long clientId, int tokenId);
 
-    Task<Result<Ulid>> CreateAsync(long clientId, int tokenType, string value);
+    Task<Result<int>> CreateAsync(long clientId, int tokenType, string value);
+
+    Task MarkAsUsedAsync(ClientToken clientToken);
 }

@@ -1,13 +1,16 @@
 ﻿using eShop.Clients.Domain;
 using eShop.Clients.Domain.Models;
 using eShop.Clients.Interfaces.Repositories;
-using NUlid;
-using System.Numerics;
+using eShop.Clients.Interfaces.ServicesExternal;
 using System.Text.Json;
 
 namespace eShop.Clients.Services;
 
-internal class ClientService(IClientRepository clientRepository, ITokenRepository tokenRepository)
+internal class ClientService(
+    IClientRepository clientRepository, 
+    ITokenRepository tokenRepository,
+    IEmailSender emailSender,
+    ISmsSender smsSender)
 {
     /// <summary>
     /// Получить клиента по ид
@@ -72,20 +75,39 @@ internal class ClientService(IClientRepository clientRepository, ITokenRepositor
     /// </summary>
     /// <param name="clientId"></param>
     /// <param name="phone"></param>
-    /// <returns>Ulid token id for Accept</returns>
-    public async Task<Result<Ulid>> UpdatePhone(long clientId, long phone)
+    /// <returns>token id for Accept</returns>
+    public async Task<Result<bool>> UpdatePhone(long clientId, long phone)
     {
         var client = await clientRepository.GetClientByIdAsync(clientId);
         if (client == null)
         {
-            return Results.NotFound<Ulid>($"Клиент '{clientId}' не найден");
+            return Results.NotFound<bool>($"Клиент '{clientId}' не найден");
         }
         if (client.Phone == phone)
         {
-            return Results.Conflict<Ulid>($"Клиент '{clientId}' уже имеет номер телефона '{phone}'");
+            return Results.Conflict<bool>($"Клиент '{clientId}' уже имеет номер телефона '{phone}'");
         }
 
-        return await tokenRepository.CreateAsync(clientId, TokenTypes.AcceptPhone, phone.ToString());
+        var tokenResult = await tokenRepository.CreateAsync(clientId, TokenTypes.AcceptPhone, phone.ToString());
+        if(!tokenResult.Success)
+        {
+            return new Result<bool>
+            {
+                Value = false,
+                Success = tokenResult.Success,
+                Type = tokenResult.Type,
+                Detail = tokenResult.Detail,
+                Errors = tokenResult.Errors
+            };
+        }
+
+        await emailSender.SendAsync(client.Email,
+            "[eShop] Смена номера телефона",
+            $@"Код для смены номера телефона: '{tokenResult.Value}'");
+
+        await smsSender.SendAsync(client.Phone, $@"Код для смены номера телефона: '{tokenResult.Value}'");
+
+        return true;
     }
 
     /// <summary>
@@ -93,41 +115,93 @@ internal class ClientService(IClientRepository clientRepository, ITokenRepositor
     /// </summary>
     /// <param name="clientId"></param>
     /// <param name="email"></param>
-    /// <returns>Ulid token id for Accept</returns>
-    public async Task<Ulid> UpdateEmail(long clientId, string email)
+    /// <returns>token id for Accept</returns>
+    public async Task<Result<bool>> UpdateEmail(long clientId, string email)
     {
         var client = await clientRepository.GetClientByIdAsync(clientId);
         if (client == null)
         {
-            return Results.NotFound<Ulid>($"Клиент '{clientId}' не найден");
+            return Results.NotFound<bool>($"Клиент '{clientId}' не найден");
         }
         if (client.Email == email)
         {
-            return Results.Conflict<Ulid>($"Клиент '{clientId}' уже имеет адрес почты '{email}'");
+            return Results.Conflict<bool>($"Клиент '{clientId}' уже имеет адрес почты '{email}'");
         }
 
-        return await tokenRepository.CreateAsync(clientId, TokenTypes.AcceptEmail, email);
+        var tokenResult = await tokenRepository.CreateAsync(clientId, TokenTypes.AcceptEmail, email);
+
+        if (!tokenResult.Success)
+        {
+            return new Result<bool>
+            {
+                Value = false,
+                Success = tokenResult.Success,
+                Type = tokenResult.Type,
+                Detail = tokenResult.Detail,
+                Errors = tokenResult.Errors
+            };
+        }
+
+        await emailSender.SendAsync(client.Email,
+            "[eShop] Смена почтового адреса",
+            $@"Код для смены почтового адреса: '{tokenResult.Value}'");
+
+        await smsSender.SendAsync(client.Phone, $@"Код для смены почтового адреса: '{tokenResult.Value}'");
+
+        return true;
     }
 
-    public async Task<Ulid> UpdatePassword(long clientId, string oldPassword, string newPassword)
+    public async Task<bool> UpdatePassword(long clientId, string oldPassword, string newPassword)
     {
-        //generate hash + salt
+        var client = await clientRepository.GetClientByIdAsync(clientId);
+        if(client == null)
+        {
+            return Results.NotFound<bool>($"Клиент '{clientId}' не найден");
+        }
+        if(!PasswordHasher.String.Verify(oldPassword, client.Password.Hash, client.Password.Salt))
+        {
+            return Results.InvalidOperation<bool>($"Старый пароль введен неверно");
+        }
+        PasswordHasher.String.HashedPassword hashedPassword = PasswordHasher.String.Hash(newPassword);
+        string hashedPasswordJson = JsonSerializer.Serialize(hashedPassword);
+
+        var tokenResult = await tokenRepository.CreateAsync(clientId, TokenTypes.ChangePassword, hashedPasswordJson);
+
+        if (!tokenResult.Success)
+        {
+            return new Result<bool>
+            {
+                Value = false,
+                Success = tokenResult.Success,
+                Type = tokenResult.Type,
+                Detail = tokenResult.Detail,
+                Errors = tokenResult.Errors
+            };
+        }
+
+        await emailSender.SendAsync(client.Email,
+            "[eShop] Смена пароля",
+            $@"Код для смены пароля: '{tokenResult.Value}'");
+
+        await smsSender.SendAsync(client.Phone, $@"Код для смены пароля: '{tokenResult.Value}'");
+
+        return true;
     }
 
     /// <summary>
     /// Выполнить токен
     /// </summary>
-    public async Task<Result<Ulid>> AcceptToken(long clientId, Ulid tokenId)
+    public async Task<Result<bool>> AcceptToken(long clientId, int tokenId)
     {
         if (!await clientRepository.ExistsClientByIdAsync(clientId))
         {
-            return Results.NotFound<Ulid>($"Клиент '{clientId}' не найден");
+            return Results.NotFound<bool>($"Клиент '{clientId}' не найден");
         }
         
         var tokenResult = await tokenRepository.GetTokenAsync(clientId, tokenId);
         if (!tokenResult.Success)
         {
-            return Results.NotFound<Ulid>($"Токен ('{clientId}', '{tokenId}') не найден");
+            return Results.NotFound<bool>($"Токен ('{clientId}', '{tokenId}') не найден");
         }
 
         var token = tokenResult.Value;
@@ -136,10 +210,14 @@ internal class ClientService(IClientRepository clientRepository, ITokenRepositor
         {
             long phone = long.Parse(token.Value);
             await clientRepository.UpdatePhoneAsync(clientId, phone);
+
+            return Results.Ok<bool>(true, "Номер телефона изменен");
         }
         else if (token.TokenType == TokenTypes.AcceptEmail)
         {
             await clientRepository.UpdateEmailAsync(clientId, token.Value);
+
+            return Results.Ok<bool>(true, "Адрес почты изменен");
         }
         else if (token.TokenType == TokenTypes.ChangePassword)
         {
@@ -147,10 +225,17 @@ internal class ClientService(IClientRepository clientRepository, ITokenRepositor
             if (password != null && !string.IsNullOrEmpty(password.Hash) && !string.IsNullOrEmpty(password.Salt))
             {
                 await clientRepository.UpdatePasswordAsync(clientId, password);
-            }
-        }
 
-        return token.TokenId;
+                return Results.Ok<bool>(true, "Пароль изменен");
+            }
+            else return Results.InvalidOperation<bool>("Ошибка JsonSerializer");
+        }
+        else
+        {
+            return Results.InvalidOperation<bool>(
+                $"Токен({clientId}, {tokenId}) с типом '{token.TokenType}' не поддерживается в этом методе");
+        }
     }
+
 
 }

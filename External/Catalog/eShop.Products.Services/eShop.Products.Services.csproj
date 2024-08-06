@@ -11,14 +11,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Api.Exceptions" Version="8.0.0" />
-	  <PackageReference Include="Results" Version="8.0.2" />
+		<PackageReference Include="Results" Version="8.0.3" />
+		<PackageReference Include="Api.Exceptions" Version="8.0.0" />
+
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\eShop.Products.Domain\eShop.Products.Domain.csproj" />
-	  <ProjectReference Include="..\eShop.Products.Interfaces\eShop.Products.Interfaces.csproj" />
-	  <ProjectReference Include="..\eShop.Products.Models\eShop.Products.Models.csproj" />
+		<ProjectReference Include="..\eShop.Products.Domain\eShop.Products.Domain.csproj" />
+		<ProjectReference Include="..\eShop.Products.Interfaces\eShop.Products.Interfaces.csproj" />
+		<ProjectReference Include="..\eShop.Products.Models\eShop.Products.Models.csproj" />
 	</ItemGroup>
 
 </Project>

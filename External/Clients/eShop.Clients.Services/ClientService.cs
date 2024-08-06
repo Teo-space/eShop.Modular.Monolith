@@ -169,14 +169,7 @@ internal class ClientService(
 
         if (!tokenResult.Success)
         {
-            return new Result<bool>
-            {
-                Value = false,
-                Success = tokenResult.Success,
-                Type = tokenResult.Type,
-                Detail = tokenResult.Detail,
-                Errors = tokenResult.Errors
-            };
+            return tokenResult.MapTo<int, bool>();
         }
 
         await emailSender.SendAsync(client.Email,

@@ -21,6 +21,10 @@ internal class ClientConf : IEntityTypeConfiguration<Client>
         builder.Property(x => x.LastName).HasMaxLength(100);
         builder.Property(x => x.Patronymic).HasMaxLength(100);
 
-
+        builder.OwnsOne(x => x.Password, password =>
+        {
+            password.Property(p => p.Hash).HasMaxLength(64);
+            password.Property(p => p.Salt).HasMaxLength(64);
+        });
     }
 }

@@ -2,7 +2,6 @@
 using eShop.Clients.Interfaces.DbContexts;
 using eShop.Clients.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
-using NUlid;
 
 namespace eShop.Clients.Persistence.Repositories;
 
@@ -21,6 +20,10 @@ internal class TokenRepository(IClientsDbContext clientsDbContext, IClientReposi
         if (token.IsUsed)
         {
             return Results.InvalidOperation<ClientToken>($"Токен ('{clientId}', '{tokenId}') уже использован");
+        }
+        if (token.ValidFrom < DateTime.Now || token.ValidTo > DateTime.Now)
+        {
+            return Results.InvalidOperation<ClientToken>($"Токен ('{clientId}', '{tokenId}') не актуален или устарел");
         }
 
         return token;

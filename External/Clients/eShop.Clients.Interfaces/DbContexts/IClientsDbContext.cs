@@ -9,4 +9,6 @@ public interface IClientsDbContext : IBaseDbContext
 
     DbSet<ClientToken> ClientTokens { get; }
 
+    DbSet<RefreshToken> RefreshTokens { get; }
+
 }

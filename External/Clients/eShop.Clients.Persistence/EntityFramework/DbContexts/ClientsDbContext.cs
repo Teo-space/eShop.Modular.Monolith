@@ -9,6 +9,7 @@ internal class ClientsDbContext : DbContext, IClientsDbContext
 {
     public DbSet<Client> Clients { get; init; }
     public DbSet<ClientToken> ClientTokens { get; init; }
+    public DbSet<RefreshToken> RefreshTokens { get; init; }
 
 
 

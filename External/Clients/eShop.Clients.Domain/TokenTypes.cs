@@ -7,5 +7,7 @@ public static class TokenTypes
 
     public static readonly int ChangePassword = 1000;
 
+    public static readonly int Auth = 2000;
+
 
 }

@@ -2,6 +2,7 @@
 using eShop.Clients.Domain.Models;
 using eShop.Clients.Interfaces.Repositories;
 using eShop.Clients.Interfaces.ServicesExternal;
+using eShop.Clients.Interfaces.Services;
 using System.Text.Json;
 
 namespace eShop.Clients.Services;
@@ -10,7 +11,7 @@ internal class ClientService(
     IClientRepository clientRepository, 
     ITokenRepository tokenRepository,
     IEmailSender emailSender,
-    ISmsSender smsSender)
+    ISmsSender smsSender) : IClientService
 {
     /// <summary>
     /// Получить клиента по ид
@@ -38,7 +39,7 @@ internal class ClientService(
     /// <param name="lastName"></param>
     /// <param name="patronymic"></param>
     /// <returns></returns>
-    public async Task<Client> Create(long phone, string email, string userName, 
+    public async Task<Result<Client>> Create(long phone, string email, string userName, 
         string firstName, string lastName, string patronymic)
     {
         if (await clientRepository.ExistsClientByPhoneAsync(phone))
@@ -91,14 +92,7 @@ internal class ClientService(
         var tokenResult = await tokenRepository.CreateAsync(clientId, TokenTypes.AcceptPhone, phone.ToString());
         if(!tokenResult.Success)
         {
-            return new Result<bool>
-            {
-                Value = false,
-                Success = tokenResult.Success,
-                Type = tokenResult.Type,
-                Detail = tokenResult.Detail,
-                Errors = tokenResult.Errors
-            };
+            return tokenResult.MapTo<int, bool>();
         }
 
         await emailSender.SendAsync(client.Email,
@@ -132,14 +126,7 @@ internal class ClientService(
 
         if (!tokenResult.Success)
         {
-            return new Result<bool>
-            {
-                Value = false,
-                Success = tokenResult.Success,
-                Type = tokenResult.Type,
-                Detail = tokenResult.Detail,
-                Errors = tokenResult.Errors
-            };
+            return tokenResult.MapTo<int, bool>();
         }
 
         await emailSender.SendAsync(client.Email,
@@ -229,6 +216,5 @@ internal class ClientService(
                 $"Токен({clientId}, {tokenId}) с типом '{token.TokenType}' не поддерживается в этом методе");
         }
     }
-
 
 }

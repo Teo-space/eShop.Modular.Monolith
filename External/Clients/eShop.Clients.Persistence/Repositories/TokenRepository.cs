@@ -41,10 +41,17 @@ internal class TokenRepository(IClientsDbContext clientsDbContext, IClientReposi
 
         var random = new Random();
 
+        int tokenId = random.Next(111_111, 999_999);
+        //старые токены должны очищатся раз в час \ сутки
+        while (await clientsDbContext.ClientTokens.AnyAsync(x => x.ClientId == clientId && x.TokenId == tokenId))
+        {
+            tokenId = random.Next(111_111, 999_999);
+        }
+
         var token = new ClientToken
         {
             ClientId = clientId,
-            TokenId = random.Next(111_111, 999_999),
+            TokenId = tokenId,
             TokenType = tokenType,
             Value = value
         };

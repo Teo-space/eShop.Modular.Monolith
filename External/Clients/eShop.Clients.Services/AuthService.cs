@@ -24,11 +24,12 @@ internal class AuthService(
 
     public async Task<Result<bool>> AuthByPhone(long phone)
     {
-        var client = await clientRepository.GetClientByPhoneAsync(phone);
-        if (client == null)
+        var clientResult = await clientRepository.GetClientByPhoneAsync(phone);
+        if(!clientResult.Success)
         {
             return Results.NotFound<bool>($"Клиент с этим номером телефона не найден");
         }
+        var client = clientResult.Value;
 
         var tokenResult = await tokenRepository.CreateAsync(client.ClientId, TokenTypes.Auth, phone.ToString());
         if (!tokenResult.Success)
@@ -50,11 +51,12 @@ internal class AuthService(
 
     public async Task<Result<bool>> AuthByEmail(string email)
     {
-        var client = await clientRepository.GetClientByEmailAsync(email);
-        if (client == null)
+        var clientResult = await clientRepository.GetClientByEmailAsync(email);
+        if (!clientResult.Success)
         {
             return Results.NotFound<bool>($"Клиент с этим адресом почты не найден");
         }
+        var client = clientResult.Value;
 
         var tokenResult = await tokenRepository.CreateAsync(client.ClientId, TokenTypes.Auth, email);
         if (!tokenResult.Success)
@@ -93,12 +95,12 @@ internal class AuthService(
 
     public async Task<Result<AuthModel>> AcceptAuthToken(long clientId, int tokenId)
     {
-        var client = await clientRepository.GetClientByIdAsync(clientId);
-
-        if (client == null)
+        var clientResult = await clientRepository.GetClientByIdAsync(clientId);
+        if (!clientResult.Success)
         {
             return Results.NotFound<AuthModel>($"Клиент '{clientId}' не найден");
         }
+        var client = clientResult.Value;
 
         var tokenResult = await tokenRepository.GetTokenAsync(clientId, tokenId);
         if (!tokenResult.Success)
@@ -126,12 +128,12 @@ internal class AuthService(
 
     public async Task<Result<AuthModel>> AuthByEmailAndPassword(string email, string password)
     {
-        var client = await clientRepository.GetClientByEmailAsync(email);
-
-        if (client == null)
+        var clientResult = await clientRepository.GetClientByEmailAsync(email);
+        if (!clientResult.Success)
         {
             return Results.NotFound<AuthModel>($"Клиент '{email}' не найден");
         }
+        var client = clientResult.Value;
 
         if (!PasswordHasher.String.Verify(password, client.Password.Hash, client.Password.Salt))
         {
@@ -151,19 +153,20 @@ internal class AuthService(
     {
         var refreshTokenResult = await refreshTokenRepository.GetByIdAsync(refreshTokenId);
 
-        if (refreshTokenResult == null)
+        if (!refreshTokenResult.Success)
         {
             return Results.NotFound<AuthModel>($"Refresh токен '{refreshTokenId}' не найден");
         }
 
         var refreshToken = refreshTokenResult.Value;
 
-        var client = await clientRepository.GetClientByIdAsync(refreshToken.ClientId);
+        var clientResult = await clientRepository.GetClientByIdAsync(refreshToken.ClientId);
 
-        if (client == null)
+        if (!clientResult.Success)
         {
             return Results.NotFound<AuthModel>($"Клиент '{refreshToken.ClientId}' не найден");
         }
+        var client = clientResult.Value;
 
         Ulid newRefreshTokenId = await refreshTokenRepository.CreateAsync(client.ClientId);
 

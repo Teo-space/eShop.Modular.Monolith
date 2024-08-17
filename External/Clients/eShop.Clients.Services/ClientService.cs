@@ -18,19 +18,20 @@ internal class ClientService(
     /// </summary>
     /// <param name="clientId"></param>
     /// <returns></returns>
-    public Task<Client> GetById(long clientId) => clientRepository.GetClientByIdAsync(clientId);
+    public Task<Result<Client>> GetById(long clientId) => clientRepository.GetClientByIdAsync(clientId);
     /// <summary>
     /// Получить клиента по номеру телефона
     /// </summary>
     /// <param name="phone"></param>
     /// <returns></returns>
-    public Task<Client> GetByPhone(long phone) => clientRepository.GetClientByPhoneAsync(phone);
+    public Task<Result<Client>> GetByPhone(long phone) => clientRepository.GetClientByPhoneAsync(phone);
     /// <summary>
     /// Получить склиента по адресу почты
     /// </summary>
     /// <param name="email"></param>
     /// <returns></returns>
-    public Task<Client> GetByEmail(string email) => clientRepository.GetClientByEmailAsync(email);
+    public Task<Result<Client>> GetByEmail(string email) => clientRepository.GetClientByEmailAsync(email);
+
 
     /// <summary>
     /// Создание клиента
@@ -79,11 +80,13 @@ internal class ClientService(
     /// <returns>token id for Accept</returns>
     public async Task<Result<bool>> UpdatePhone(long clientId, long phone)
     {
-        var client = await clientRepository.GetClientByIdAsync(clientId);
-        if (client == null)
+        var clientResult = await clientRepository.GetClientByIdAsync(clientId);
+        if (!clientResult.Success)
         {
-            return Results.NotFound<bool>($"Клиент '{clientId}' не найден");
+            return clientResult.MapTo<Client, bool>();
         }
+        var client = clientResult.Value;
+
         if (client.Phone == phone)
         {
             return Results.Conflict<bool>($"Клиент '{clientId}' уже имеет номер телефона '{phone}'");
@@ -112,11 +115,12 @@ internal class ClientService(
     /// <returns>token id for Accept</returns>
     public async Task<Result<bool>> UpdateEmail(long clientId, string email)
     {
-        var client = await clientRepository.GetClientByIdAsync(clientId);
-        if (client == null)
+        var clientResult = await clientRepository.GetClientByIdAsync(clientId);
+        if (!clientResult.Success)
         {
-            return Results.NotFound<bool>($"Клиент '{clientId}' не найден");
+            return clientResult.MapTo<Client, bool>();
         }
+        var client = clientResult.Value;
         if (client.Email == email)
         {
             return Results.Conflict<bool>($"Клиент '{clientId}' уже имеет адрес почты '{email}'");
@@ -140,15 +144,18 @@ internal class ClientService(
 
     public async Task<bool> UpdatePassword(long clientId, string oldPassword, string newPassword)
     {
-        var client = await clientRepository.GetClientByIdAsync(clientId);
-        if(client == null)
+        var clientResult = await clientRepository.GetClientByIdAsync(clientId);
+        if (!clientResult.Success)
         {
-            return Results.NotFound<bool>($"Клиент '{clientId}' не найден");
+            return clientResult.MapTo<Client, bool>();
         }
-        if(!PasswordHasher.String.Verify(oldPassword, client.Password.Hash, client.Password.Salt))
+
+        var client = clientResult.Value;
+        if (!PasswordHasher.String.Verify(oldPassword, client.Password.Hash, client.Password.Salt))
         {
             return Results.InvalidOperation<bool>($"Старый пароль введен неверно");
         }
+
         PasswordHasher.String.HashedPassword hashedPassword = PasswordHasher.String.Hash(newPassword);
         string hashedPasswordJson = JsonSerializer.Serialize(hashedPassword);
 

@@ -10,19 +10,19 @@ public interface IClientService
     /// </summary>
     /// <param name="clientId"></param>
     /// <returns></returns>
-    Task<Client> GetById(long clientId);
+    Task<Result<Client>> GetById(long clientId);
     /// <summary>
     /// Получить клиента по номеру телефона
     /// </summary>
     /// <param name="phone"></param>
     /// <returns></returns>
-    Task<Client> GetByPhone(long phone);
+    Task<Result<Client>> GetByPhone(long phone);
     /// <summary>
     /// Получить склиента по адресу почты
     /// </summary>
     /// <param name="email"></param>
     /// <returns></returns>
-    Task<Client> GetByEmail(string email);
+    Task<Result<Client>> GetByEmail(string email);
 
 
     /// <summary>

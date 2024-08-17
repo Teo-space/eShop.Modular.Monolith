@@ -45,6 +45,20 @@ internal class CatalogProductTypeProducts(ICatalogRepository catalogRepository) 
         return model;
     }
 
+    /// <summary>
+    /// 
+    /// Добавить проверку
+    /// 
+    /// если фильтр передан только одного типа
+    /// Makers || Params(1 param)
+    /// тогда значения этого одного фильтра не выключаются
+    /// 
+    /// если передано больше одного
+    /// 
+    /// </summary>
+
+
+
 
     private IReadOnlyCollection<ProductModel> MapProducts(IReadOnlyCollection<Product> products)
     {

@@ -79,11 +79,11 @@ internal class CatalogRepository(ICatalogDbContext catalogDbContext) : ICatalogR
         {
             productsQuery = productsQuery.OrderBy(x => x.Price).ThenBy(x => x.Maker.Name).ThenBy(x => x.Name);
         }
-        else if (param.ProductsSorting == Interfaces.Enum.ProductsSorting.MostPopular)
+        else if (param.ProductsSorting == Interfaces.Enum.ProductsSorting.PriceDescending)
         {
             productsQuery = productsQuery.OrderByDescending(x => x.Price).ThenBy(x => x.Maker.Name).ThenBy(x => x.Name);
         }
-        else if (param.ProductsSorting == Interfaces.Enum.ProductsSorting.PriceDescending)
+        else if (param.ProductsSorting == Interfaces.Enum.ProductsSorting.MostPopular)
         {
             productsQuery = productsQuery.OrderByDescending(x => x.SalesCount).ThenBy(x => x.Maker.Name).ThenBy(x => x.Name);
         }

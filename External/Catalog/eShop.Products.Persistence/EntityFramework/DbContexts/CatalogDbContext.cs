@@ -18,6 +18,7 @@ internal class CatalogDbContext : DbContext, ICatalogDbContext
 
     public DbSet<Product> Products { get; init; }
     public DbSet<ProductParamValue> ProductParamValues { get; init; }
+    public DbSet<ProductFilterPrice> ProductFilterPrices { get; init; }
 
     public DbSet<Param> Params { get; init; }
     public DbSet<ParamValue> ParamValues { get; init; }

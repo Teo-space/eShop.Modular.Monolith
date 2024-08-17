@@ -13,6 +13,7 @@ public interface IProductsDbContext : IBaseDbContext
 
     DbSet<Product> Products { get; }
     DbSet<ProductParamValue> ProductParamValues { get; }
+    DbSet<ProductFilterPrice> ProductFilterPrices { get; }
 
     DbSet<Param> Params { get; }
     DbSet<ParamValue> ParamValues { get; }

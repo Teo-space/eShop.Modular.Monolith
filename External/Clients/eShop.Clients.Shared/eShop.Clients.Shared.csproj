@@ -11,7 +11,9 @@
 			<PrivateAssets>All</PrivateAssets>
 		</ProjectReference>
 
-		<ProjectReference Include="..\eShop.Clients.Persistence\eShop.Clients.Persistence.csproj" />
+		<ProjectReference Include="..\eShop.Clients.Persistence\eShop.Clients.Persistence.csproj" >
+			<PrivateAssets>All</PrivateAssets>
+		</ProjectReference>
 	</ItemGroup>
 
 

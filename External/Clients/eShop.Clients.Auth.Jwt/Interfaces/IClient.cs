@@ -6,16 +6,16 @@ public interface IClient
 {
     public abstract ClaimsPrincipal User { get; }
 
-    public virtual string UserName => FindFirst("UserName")?.Value
-        ?? throw new UnauthorizedAccessException("User has no claim 'UserName'");
+    public virtual string UserName => FindFirst(ClientClaims.UserName)?.Value
+        ?? throw new UnauthorizedAccessException($"User has no claim '{ClientClaims.UserName}'");
 
 
     public virtual long ClientId
     {
         get
         {
-            string value = FindFirst("ClientId")?.Value
-                ?? throw new UnauthorizedAccessException("User has no claim 'ClientId'");
+            string value = FindFirst(ClientClaims.ClientId)?.Value
+                ?? throw new UnauthorizedAccessException($"User has no claim '{ClientClaims.ClientId}'");
 
             return long.Parse(value);
         }
@@ -25,15 +25,15 @@ public interface IClient
     {
         get
         {
-            string value = FindFirst("Phone")?.Value
-                ?? throw new UnauthorizedAccessException("User has no claim 'Phone'");
+            string value = FindFirst(ClientClaims.Phone)?.Value
+                ?? throw new UnauthorizedAccessException($"User has no claim '{ClientClaims.Phone}'");
 
             return long.Parse(value);
         }
     }
 
-    public virtual string Email => FindFirst("Email")?.Value
-        ?? throw new UnauthorizedAccessException("User has no claim 'Email'");
+    public virtual string Email => FindFirst(ClientClaims.Email)?.Value
+        ?? throw new UnauthorizedAccessException($"User has no claim '{ClientClaims.Email}'");
 
 
     public virtual IEnumerable<Claim> Claims => User.Claims;

@@ -1,10 +1,10 @@
 ﻿using eShop.Clients.Auth.Jwt.Implementations;
 using eShop.Clients.Auth.Jwt.Interfaces;
+using eShop.Clients.Auth.Jwt.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System.Collections.Generic;
 using System.Text;
 
 namespace eShop.Clients.Auth.Jwt;
@@ -22,10 +22,15 @@ public static class JwtAuthDependencyInjection
         services.AddScoped<IClient, TestClientAccessor>();
     }
 
+    public static void AddJwtBearerSettings(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOptions<JWTSettings>().Bind(configuration.GetSection(nameof(JWTSettings)));
+    }
+
     public static void AddJwtBearer(this IServiceCollection services, IConfiguration configuration)
     {
-        var JWTSettings = configuration.GetSection("JWTSettings");
-        var jwtSecret = JWTSettings.GetValue<string>("Secret")
+        var jwtSettings = configuration.GetSection(nameof(JWTSettings));
+        var jwtSecret = jwtSettings.GetValue<string>("Secret")
             ?? throw new Exception("jwtSecret not found ");
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -1,9 +1,14 @@
-﻿using eShop.Clients.Domain;
+﻿using eShop.Clients.Auth.Jwt.Helpers;
+using eShop.Clients.Auth.Jwt.Settings;
+using eShop.Clients.Domain;
+using eShop.Clients.Domain.Models;
 using eShop.Clients.Interfaces.Models;
 using eShop.Clients.Interfaces.Repositories;
 using eShop.Clients.Interfaces.Services;
 using eShop.Clients.Interfaces.ServicesExternal;
+using Microsoft.Extensions.Options;
 using NUlid;
+using System.Security.Claims;
 
 namespace eShop.Clients.Services;
 
@@ -12,8 +17,11 @@ internal class AuthService(
     ITokenRepository tokenRepository,
     IRefreshTokenRepository refreshTokenRepository,
     IEmailSender emailSender,
-    ISmsSender smsSender) : IAuthService
+    ISmsSender smsSender,
+    IOptions<JWTSettings> options) : IAuthService
 {
+    private readonly JWTSettings jwtSettings = options.Value ?? throw new Exception($"Секция настроек не определена: 'JWTSettings'");
+
     public async Task<Result<bool>> AuthByPhone(long phone)
     {
         var client = await clientRepository.GetClientByPhoneAsync(phone);
@@ -68,6 +76,21 @@ internal class AuthService(
         return Results.Ok(true);
     }
 
+    private string CreateJwt(Client client)
+    {
+        var claims = new List<Claim>
+        {
+            new Claim(ClientClaims.UserName, client.UserName),
+            new Claim(ClientClaims.ClientId, client.ClientId.ToString()),
+            new Claim(ClientClaims.Phone, client.Phone.ToString()),
+            new Claim(ClientClaims.Email, client.Email),
+        };
+
+        string jwtToken = TokenHelper.WriteToken(claims, jwtSettings.Secret, jwtSettings.ExpirationInMinutes);
+
+        return jwtToken;
+    }
+
     public async Task<Result<AuthModel>> AcceptAuthToken(long clientId, int tokenId)
     {
         var client = await clientRepository.GetClientByIdAsync(clientId);
@@ -87,15 +110,11 @@ internal class AuthService(
 
         if (token.TokenType == TokenTypes.Auth)
         {
-            //Создаем Jwt
-
-
             Ulid refreshTokenId = await refreshTokenRepository.CreateAsync(clientId);
-
             return new AuthModel
             {
                 RefreshToken = refreshTokenId,
-                //JwtToken = Jwt
+                JwtToken = CreateJwt(client)
             };
         }
         else
@@ -119,15 +138,12 @@ internal class AuthService(
             return Results.InvalidOperation<AuthModel>($"Неправильный пароль");
         }
 
-        //Создаем Jwt
-
-
         Ulid refreshTokenId = await refreshTokenRepository.CreateAsync(client.ClientId);
 
         return new AuthModel
         {
             RefreshToken = refreshTokenId,
-            //JwtToken = Jwt
+            JwtToken = CreateJwt(client)
         };
     }
 
@@ -149,15 +165,12 @@ internal class AuthService(
             return Results.NotFound<AuthModel>($"Клиент '{refreshToken.ClientId}' не найден");
         }
 
-        //Создаем Jwt
-
-
         Ulid newRefreshTokenId = await refreshTokenRepository.CreateAsync(client.ClientId);
 
         return new AuthModel
         {
             RefreshToken = newRefreshTokenId,
-            //JwtToken = Jwt
+            JwtToken = CreateJwt(client)
         };
     }
 }

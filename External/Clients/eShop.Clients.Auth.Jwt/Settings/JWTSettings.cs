@@ -1,7 +1,7 @@
 ﻿namespace eShop.Clients.Auth.Jwt.Settings;
 
-public sealed class JWTSettings
+public sealed record JWTSettings
 {
-    public string Secret { get; set; }
-    public int ExpirationInMinutes { get; set; }
+    public string Secret { get; init; }
+    public int ExpirationInMinutes { get; init; }
 }

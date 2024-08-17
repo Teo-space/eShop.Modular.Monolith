@@ -11,6 +11,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\eShop.Clients.Auth.Jwt\eShop.Clients.Auth.Jwt.csproj" />
 		<ProjectReference Include="..\eShop.Clients.Domain\eShop.Clients.Domain.csproj" />
 		<ProjectReference Include="..\eShop.Clients.Interfaces\eShop.Clients.Interfaces.csproj" />
 		<ProjectReference Include="..\eShop.Clients.Models\eShop.Clients.Models.csproj" />

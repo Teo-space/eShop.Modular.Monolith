@@ -1,21 +1,54 @@
 ﻿using eShop.Clients.Domain.Models;
 using eShop.Clients.Interfaces.DbContexts;
 using eShop.Clients.Interfaces.Repositories;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
-using NUlid;
+using System.Numerics;
 
 namespace eShop.Clients.Persistence.Repositories;
 
 internal class ClientRepository(IClientsDbContext clientsDbContext) : IClientRepository
 {
-    public Task<Client> GetClientByIdAsync(long clientId) 
-        => clientsDbContext.Clients.FirstOrDefaultAsync(x => x.ClientId == clientId);
-    public Task<Client> GetClientByPhoneAsync(long phone) 
-        => clientsDbContext.Clients.FirstOrDefaultAsync(x => x.Phone == phone);
-    public Task<Client> GetClientByEmailAsync(string email) 
-        => clientsDbContext.Clients.FirstOrDefaultAsync(x => x.Email == email);
-    public Task<Client> GetClientByUserNameAsync(string userName) 
-        => clientsDbContext.Clients.FirstOrDefaultAsync(x => x.UserName == userName);
+    public async Task<Result<Client>> GetClientByIdAsync(long clientId) 
+        => await clientsDbContext.Clients.FirstOrDefaultAsync(x => x.ClientId == clientId) 
+        ?? Results.NotFound<Client>($"NotFound by Id: {clientId}");
+
+    public async Task<Result<Client>> GetClientByPhoneAsync(long phone) 
+        => await clientsDbContext.Clients.FirstOrDefaultAsync(x => x.Phone == phone)
+        ?? Results.NotFound<Client>($"NotFound by phone: {phone}");
+
+    public async Task<Result<Client>> GetClientByEmailAsync(string email) 
+        => await clientsDbContext.Clients.FirstOrDefaultAsync(x => x.Email == email)
+        ?? Results.NotFound<Client>($"NotFound by email: {email}");
+
+    public async Task<Result<Client>> GetClientByUserNameAsync(string userName) 
+        => await clientsDbContext.Clients.FirstOrDefaultAsync(x => x.UserName == userName)
+        ?? Results.NotFound<Client>($"NotFound by userName: {userName}");
+
+    public async Task<Result<T>> GetClientByIdAsync<T>(long clientId) where T: class
+        => await clientsDbContext.Clients
+        .Where(x => x.ClientId == clientId)
+        .ProjectToType<T>()
+        .FirstOrDefaultAsync() ?? Results.NotFound<T>($"NotFound by Id: {clientId}");
+
+    public async Task<Result<T>> GetClientByPhoneAsync<T>(long phone) where T : class
+        => await clientsDbContext.Clients
+        .Where(x => x.Phone == phone)
+        .ProjectToType<T>()
+        .FirstOrDefaultAsync() ?? Results.NotFound<T>($"NotFound by phone: {phone}");
+
+    public async Task<Result<T>> GetClientByEmailAsync<T>(string email) where T : class
+        => await clientsDbContext.Clients
+        .Where(x => x.Email == email)
+        .ProjectToType<T>()
+        .FirstOrDefaultAsync() ?? Results.NotFound<T>($"NotFound by email: {email}");
+
+    public async Task<Result<T>> GetClientByUserNameAsync<T>(string userName) where T : class
+        => await clientsDbContext.Clients
+        .Where(x => x.UserName == userName)
+        .ProjectToType<T>()
+        .FirstOrDefaultAsync() ?? Results.NotFound<T>($"NotFound by userName: {userName}");
+
 
     public Task<bool> ExistsClientByIdAsync(long clientId) => clientsDbContext.Clients.AnyAsync(x => x.ClientId == clientId);
     public Task<bool> ExistsClientByPhoneAsync(long phone) => clientsDbContext.Clients.AnyAsync(x => x.Phone == phone);

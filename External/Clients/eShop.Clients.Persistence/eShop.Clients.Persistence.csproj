@@ -12,6 +12,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Results" Version="8.0.3" />
+
+		<PackageReference Include="Mapster" Version="7.4.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
 	</ItemGroup>
 

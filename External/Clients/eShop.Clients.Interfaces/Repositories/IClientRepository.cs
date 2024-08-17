@@ -4,10 +4,15 @@ namespace eShop.Clients.Interfaces.Repositories;
 
 public interface IClientRepository
 {
-    Task<Client> GetClientByIdAsync(long clientId);
-    Task<Client> GetClientByPhoneAsync(long phone);
-    Task<Client> GetClientByEmailAsync(string email);
-    Task<Client> GetClientByUserNameAsync(string userName);
+    Task<Result<Client>> GetClientByIdAsync(long clientId);
+    Task<Result<Client>> GetClientByPhoneAsync(long phone);
+    Task<Result<Client>> GetClientByEmailAsync(string email);
+    Task<Result<Client>> GetClientByUserNameAsync(string userName);
+
+    Task<Result<T>> GetClientByIdAsync<T>(long clientId) where T : class;
+    Task<Result<T>> GetClientByPhoneAsync<T>(long phone) where T : class;
+    Task<Result<T>> GetClientByEmailAsync<T>(string email) where T : class;
+    Task<Result<T>> GetClientByUserNameAsync<T>(string userName) where T : class;
 
     Task<bool> ExistsClientByIdAsync(long clientId);
     Task<bool> ExistsClientByPhoneAsync(long phone);

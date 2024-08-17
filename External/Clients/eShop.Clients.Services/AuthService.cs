@@ -27,7 +27,7 @@ internal class AuthService(
         var clientResult = await clientRepository.GetClientByPhoneAsync(phone);
         if(!clientResult.Success)
         {
-            return Results.NotFound<bool>($"Клиент с этим номером телефона не найден");
+            return clientResult.MapTo<Client, bool>();
         }
         var client = clientResult.Value;
 
@@ -54,21 +54,14 @@ internal class AuthService(
         var clientResult = await clientRepository.GetClientByEmailAsync(email);
         if (!clientResult.Success)
         {
-            return Results.NotFound<bool>($"Клиент с этим адресом почты не найден");
+            return clientResult.MapTo<Client, bool>();
         }
         var client = clientResult.Value;
 
         var tokenResult = await tokenRepository.CreateAsync(client.ClientId, TokenTypes.Auth, email);
         if (!tokenResult.Success)
         {
-            return new Result<bool>
-            {
-                Value = false,
-                Success = tokenResult.Success,
-                Type = tokenResult.Type,
-                Detail = tokenResult.Detail,
-                Errors = tokenResult.Errors
-            };
+            return tokenResult.MapTo<int, bool>();
         }
 
         await emailSender.SendAsync(client.Email,
@@ -98,14 +91,12 @@ internal class AuthService(
         var clientResult = await clientRepository.GetClientByIdAsync(clientId);
         if (!clientResult.Success)
         {
-            return Results.NotFound<AuthModel>($"Клиент '{clientId}' не найден");
+            return clientResult.MapTo<Client, AuthModel>();
         }
-        var client = clientResult.Value;
-
         var tokenResult = await tokenRepository.GetTokenAsync(clientId, tokenId);
         if (!tokenResult.Success)
         {
-            return Results.NotFound<AuthModel>($"Токен ('{clientId}', '{tokenId}') не найден");
+            return tokenResult.MapTo<ClientToken, AuthModel>();
         }
 
         var token = tokenResult.Value;
@@ -116,7 +107,7 @@ internal class AuthService(
             return new AuthModel
             {
                 RefreshToken = refreshTokenId,
-                JwtToken = CreateJwt(client)
+                JwtToken = CreateJwt(clientResult.Value)
             };
         }
         else
@@ -131,7 +122,7 @@ internal class AuthService(
         var clientResult = await clientRepository.GetClientByEmailAsync(email);
         if (!clientResult.Success)
         {
-            return Results.NotFound<AuthModel>($"Клиент '{email}' не найден");
+            return clientResult.MapTo<Client, AuthModel>();
         }
         var client = clientResult.Value;
 
@@ -152,19 +143,16 @@ internal class AuthService(
     public async Task<Result<AuthModel>> RefreshToken(Ulid refreshTokenId)
     {
         var refreshTokenResult = await refreshTokenRepository.GetByIdAsync(refreshTokenId);
-
         if (!refreshTokenResult.Success)
         {
-            return Results.NotFound<AuthModel>($"Refresh токен '{refreshTokenId}' не найден");
+            return refreshTokenResult.MapTo<RefreshToken, AuthModel>();
         }
 
         var refreshToken = refreshTokenResult.Value;
-
         var clientResult = await clientRepository.GetClientByIdAsync(refreshToken.ClientId);
-
         if (!clientResult.Success)
         {
-            return Results.NotFound<AuthModel>($"Клиент '{refreshToken.ClientId}' не найден");
+            return clientResult.MapTo<Client, AuthModel>();
         }
         var client = clientResult.Value;
 

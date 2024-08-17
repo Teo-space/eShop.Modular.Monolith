@@ -188,7 +188,7 @@ internal class ClientService(
         var tokenResult = await tokenRepository.GetTokenAsync(clientId, tokenId);
         if (!tokenResult.Success)
         {
-            return Results.NotFound<bool>($"Токен ('{clientId}', '{tokenId}') не найден");
+            return tokenResult.MapTo<ClientToken, bool>();
         }
 
         var token = tokenResult.Value;

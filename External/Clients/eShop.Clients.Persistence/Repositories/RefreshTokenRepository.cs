@@ -13,7 +13,7 @@ internal class RefreshTokenRepository(IClientsDbContext clientsDbContext) : IRef
         var refreshToken = await clientsDbContext.RefreshTokens.FirstOrDefaultAsync(x => x.RefreshTokenId == refreshTokenId);
         if(refreshToken == null)
         {
-            return Results.NotFoundById<RefreshToken>(refreshTokenId);
+            return Results.NotFound<RefreshToken>($"Refresh токен '{refreshTokenId}' не найден");
         }
         if(refreshToken.IsUsed)
         {

@@ -10,15 +10,15 @@ internal class ClientRepository(IClientsDbContext clientsDbContext) : IClientRep
 {
     public async Task<Result<Client>> GetClientByIdAsync(long clientId) 
         => await clientsDbContext.Clients.FirstOrDefaultAsync(x => x.ClientId == clientId) 
-        ?? Results.NotFound<Client>($"Клиент не найден по ID: {clientId}");
+        ?? Results.NotFound<Client>($"Клиент '{clientId}' не найден");
 
     public async Task<Result<Client>> GetClientByPhoneAsync(long phone) 
         => await clientsDbContext.Clients.FirstOrDefaultAsync(x => x.Phone == phone)
-        ?? Results.NotFound<Client>($"Клиент не найден по номеру телефона: {phone}");
+        ?? Results.NotFound<Client>($"Клиент с этим '{phone}' номером телефона не найден");
 
     public async Task<Result<Client>> GetClientByEmailAsync(string email) 
         => await clientsDbContext.Clients.FirstOrDefaultAsync(x => x.Email == email)
-        ?? Results.NotFound<Client>($"Клиент не найден по email: {email}");
+        ?? Results.NotFound<Client>($"Клиент с этим '{email}' адресом почты не найден");
 
     public async Task<Result<Client>> GetClientByUserNameAsync(string userName) 
         => await clientsDbContext.Clients.FirstOrDefaultAsync(x => x.UserName == userName)
@@ -28,19 +28,19 @@ internal class ClientRepository(IClientsDbContext clientsDbContext) : IClientRep
         => await clientsDbContext.Clients
         .Where(x => x.ClientId == clientId)
         .ProjectToType<T>()
-        .FirstOrDefaultAsync() ?? Results.NotFound<T>($"Клиент не найден по ID: {clientId}");
+        .FirstOrDefaultAsync() ?? Results.NotFound<T>($"Клиент '{clientId}' не найден");
 
     public async Task<Result<T>> GetClientByPhoneAsync<T>(long phone) where T : class
         => await clientsDbContext.Clients
         .Where(x => x.Phone == phone)
         .ProjectToType<T>()
-        .FirstOrDefaultAsync() ?? Results.NotFound<T>($"Клиент не найден по номеру телефона: {phone}");
+        .FirstOrDefaultAsync() ?? Results.NotFound<T>($"Клиент с этим '{phone}' номером телефона не найден");
 
     public async Task<Result<T>> GetClientByEmailAsync<T>(string email) where T : class
         => await clientsDbContext.Clients
         .Where(x => x.Email == email)
         .ProjectToType<T>()
-        .FirstOrDefaultAsync() ?? Results.NotFound<T>($"Клиент не найден по email: {email}");
+        .FirstOrDefaultAsync() ?? Results.NotFound<T>($"Клиент с этим '{email}' адресом почты не найден");
 
     public async Task<Result<T>> GetClientByUserNameAsync<T>(string userName) where T : class
         => await clientsDbContext.Clients

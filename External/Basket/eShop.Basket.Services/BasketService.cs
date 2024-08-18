@@ -6,6 +6,15 @@ using eShop.Shared.Interfaces.SharedServices;
 
 namespace eShop.Basket.Services;
 
+/*
+TODO
+Расценка
+Количество
+Промоакции
+
+
+*/
+
 internal class BasketService(
     IBasketRepository basketRepository,
     IClientsSharedService clientsSharedService,

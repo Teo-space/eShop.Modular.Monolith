@@ -15,7 +15,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Api.Exceptions" Version="8.0.0" />
 		<PackageReference Include="Results" Version="8.0.3" />
 	</ItemGroup>
 	

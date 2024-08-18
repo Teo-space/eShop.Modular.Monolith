@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\eShop.Shared.Interfaces\eShop.Shared.Interfaces.csproj" />
+    <ProjectReference Include="..\eShop.Basket.Interfaces\eShop.Basket.Interfaces.csproj" />
+  </ItemGroup>
+
 </Project>

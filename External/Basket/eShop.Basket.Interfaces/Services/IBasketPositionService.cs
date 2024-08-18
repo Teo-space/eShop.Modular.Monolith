@@ -4,8 +4,8 @@ namespace eShop.Basket.Interfaces.Services;
 
 public interface IBasketPositionService
 {
-    public Task<BasketPosition> Get(long ClientId, int productId);
-    public Task<IReadOnlyCollection<BasketPosition>> Get(long ClientId);
+    public Task<Result<BasketPosition>> Get(long ClientId, int productId);
+    public Task<IReadOnlyCollection<BasketPosition>> GetAll(long ClientId);
 
     public Task Add(long ClientId, int productId, int quantity);
     public Task UpdateQuantity(long ClientId, int productId, int quantity);

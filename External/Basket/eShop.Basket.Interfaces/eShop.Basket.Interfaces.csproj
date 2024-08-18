@@ -1,20 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="Results" Version="8.0.3" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<Folder Include="DbContexts\" />
+		<Folder Include="Models\" />
+		<Folder Include="Params\" />
+		<Folder Include="Repositories\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DbContexts\" />
-    <Folder Include="Models\" />
-    <Folder Include="Params\" />
-    <Folder Include="Repositories\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\eShop.Basket.Domain\eShop.Basket.Domain.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\eShop.Basket.Domain\eShop.Basket.Domain.csproj" />
+	</ItemGroup>
 
 </Project>

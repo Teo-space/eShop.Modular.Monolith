@@ -14,4 +14,5 @@ public interface ICatalogRepository
 
     Task<IReadOnlyCollection<Product>> GetProducts(int productTypeId);
 
+    Task<Result<Product>> GetProduct(int productd);
 }

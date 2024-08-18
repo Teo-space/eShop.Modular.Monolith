@@ -1,23 +1,19 @@
-﻿using eShop.Products.Domain.Interfaces;
+﻿namespace eShop.Shared.Interfaces.Models.Products;
 
-namespace eShop.Products.Domain.Models;
-
-public class Product : IDeletable
+public sealed record ProductModel
 {
     public int ProductId { get; set; }
-    public int ProductTypeId { get; set; }
-    public ProductType ProductType { get; set; }
+    public string ProductNumber { get; set; }
+    public string ProductName { get; set; }
+    public string ProductDescription { get; set; }
 
     public bool IsDeleted { get; set; }
 
+    public int ProductTypeId { get; set; }
+    public string ProductTypeName { get; set; }
+
     public int MakerId { get; set; }
-    public Maker Maker { get; set; }
-
-    public string Number { get; set; }
-
-    public string Name { get; set; }
-
-    public string Description { get; set; }
+    public string MakerName { get; set; }
 
 
     /// <summary>
@@ -45,7 +41,4 @@ public class Product : IDeletable
     /// 
     /// </summary>
     public int ReviewsCount { get; set; }
-
-
-    public HashSet<ProductParamValue> ParamValues { get; set; }
 }

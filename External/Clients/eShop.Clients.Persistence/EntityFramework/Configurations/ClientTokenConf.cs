@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace eShop.Products.Persistence.EntityFramework.Configurations;
+namespace eShop.Clients.Persistence.EntityFramework.Configurations;
 
 internal class ClientTokenConf : IEntityTypeConfiguration<ClientToken>
 {

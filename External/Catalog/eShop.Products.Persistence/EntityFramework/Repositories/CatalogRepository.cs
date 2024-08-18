@@ -57,4 +57,22 @@ internal class CatalogRepository(ICatalogDbContext catalogDbContext) : ICatalogR
             .ToArrayAsync();
     }
 
+    public async Task<Result<Product>> GetProduct(int productd)
+    {
+        var product = await catalogDbContext.Products
+            .AsNoTracking()
+            .Where(x => x.ProductId == productd)
+            .Where(x => x.IsDeleted == false)
+            .Include(x => x.ProductType)
+            .Include(x => x.Maker)
+            .FirstOrDefaultAsync();
+
+        if(product == null)
+        {
+            return Results.NotFound<Product>($"Товар '{productd}' не найден");
+        }
+
+        return product;
+    }
+
 }

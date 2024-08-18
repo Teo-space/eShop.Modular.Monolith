@@ -8,7 +8,7 @@ namespace eShop.Products.Persistence;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPeristance(this IServiceCollection services)
+    public static IServiceCollection AddPersistance(this IServiceCollection services)
     {
         //services.AddDbContext<ProductsDbContext>(options => options.UseSqlServer)
         services.AddScoped<IProductsDbContext, ProductsDbContext>();
@@ -19,7 +19,9 @@ public static class DependencyInjection
 
         services.AddScoped<ICatalogRepository, CatalogRepository>();
 
-        return services.AddPeristance(); 
+
+
+        return services; 
     }
 
 

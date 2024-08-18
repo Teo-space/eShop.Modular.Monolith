@@ -4,11 +4,11 @@ using eShop.Clients.Persistence.EntityFramework.DbContexts;
 using eShop.Clients.Persistence.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace eShop.Products.Persistence;
+namespace eShop.Clients.Persistence;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPeristance(this IServiceCollection services)
+    public static IServiceCollection AddPersistance(this IServiceCollection services)
     {
         //services.AddDbContext<ClientsDbContext>(options => options.UseSqlServer)
         services.AddScoped<IClientsDbContext, ClientsDbContext>();
@@ -22,9 +22,7 @@ public static class DependencyInjection
 
 
 
-
-
-        return services.AddPeristance(); 
+        return services;
     }
 
 

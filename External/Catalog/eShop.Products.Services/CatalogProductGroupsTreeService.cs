@@ -30,7 +30,7 @@ internal class CatalogProductGroupsTreeService(ICatalogRepository catalogReposit
         List<ProductGroupModel> levelResults = new List<ProductGroupModel>(model.ProductGroups);
         List<ProductGroupModel> nextLevelResults = new List<ProductGroupModel>();
 
-        while (levelResults.NotEmpty())
+        while (levelResults.HasAny())
         {
             foreach (var productGroup in levelResults)
             {
@@ -45,7 +45,7 @@ internal class CatalogProductGroupsTreeService(ICatalogRepository catalogReposit
                     .OrderBy(x => x.Name)
                     .ToArray();
 
-                if (childs.NotEmpty())
+                if (childs.HasAny())
                 {
                     productGroup.Childs = childs;
                     nextLevelResults.AddRange(childs);
@@ -53,7 +53,7 @@ internal class CatalogProductGroupsTreeService(ICatalogRepository catalogReposit
             }
 
             levelResults.Clear();
-            if (nextLevelResults.NotEmpty())
+            if (nextLevelResults.HasAny())
             {
                 levelResults.AddRange(nextLevelResults);
                 nextLevelResults.Clear();

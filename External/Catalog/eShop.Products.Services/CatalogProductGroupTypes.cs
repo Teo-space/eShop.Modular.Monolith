@@ -1,4 +1,5 @@
-﻿using eShop.Products.Interfaces.Repositories;
+﻿using eShop.Products.Domain.Models;
+using eShop.Products.Interfaces.Repositories;
 using eShop.Products.Interfaces.Services;
 using eShop.Products.Models.Catalog.ProductGroupTypes;
 
@@ -8,10 +9,15 @@ internal class CatalogProductGroupTypes(ICatalogRepository catalogRepository) : 
 {
     public async Task<Result<ProductGroupTypesModel>> GetProductGroupTypes(int productGroupId)
     {
-        var productGroup = await catalogRepository.GetProductGroup(productGroupId);
+        var productGroupResult = await catalogRepository.GetProductGroup(productGroupId);
+        if (!productGroupResult.Success)
+        {
+            return productGroupResult.MapTo<ProductGroup, ProductGroupTypesModel>();
+        }
 
         var productTypes = await catalogRepository.GetProductTypes(productGroupId);
 
+        var productGroup = productGroupResult.Value;
         var model = new ProductGroupTypesModel
         {
             ProductGroupId = productGroup.ProductGroupId,

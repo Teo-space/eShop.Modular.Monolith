@@ -1,5 +1,4 @@
 ﻿using eShop.Products.Domain.Models;
-using eShop.Products.Interfaces.Models;
 using eShop.Products.Interfaces.Params.Catalog;
 using eShop.Products.Interfaces.Repositories;
 using eShop.Products.Interfaces.Services;
@@ -11,54 +10,69 @@ internal class CatalogProductTypeProducts(ICatalogRepository catalogRepository) 
 {
     public async Task<Result<ProductListModel>> GetProductTypeProducts(ProductParams param)
     {
-        var productType = await catalogRepository.GetProductType(param.ProductTypeId);
-        var products = await catalogRepository.GetProducts(param);
-
-        var emptyParams = param with
+        var productTypeResult = await catalogRepository.GetProductType(param.ProductTypeId);
+        if (!productTypeResult.Success)
         {
-            Makers = Array.Empty<int>(),
-            Params = Array.Empty<ProductFilterParam>(),
-            HasStars = false,
-            HasReviews = false,
+            return productTypeResult.MapTo<ProductType, ProductListModel>();
+        }
+
+        var allDomainProducts = await catalogRepository.GetProducts(param.ProductTypeId);
+
+        var allProducts = MapProducts(allDomainProducts);
+        var allMakers = GetMakers(allProducts);
+        var allParamValues = GetParamValues(allProducts);
+
+        var filteredProducts = FilterProducts(param, allProducts);
+        var preparedFilters = PrepareFilters(param, filteredProducts, allMakers, allParamValues);
+        var sortedPaginatedProducts = SortAndPaginateProducts(param, filteredProducts);
+
+        return new ProductListModel
+        {
+            TotalCount = filteredProducts.Count,
+            CurrentCount = sortedPaginatedProducts.Count,
+            Products = sortedPaginatedProducts,
+
+            PageNumber = param.PageNumber,
+            PageSize = param.PageSize,
+
+            Filters = new ProductFiltersModel
+            {
+                MakersCount = preparedFilters.Makers.Count,
+                Makers = preparedFilters.Makers,
+
+                ParamsCount = preparedFilters.ParamValues.Count,
+                Params = preparedFilters.ParamValues,
+            }
         };
-
-        var allMakers = await catalogRepository.GetMakersFilters(emptyParams);
-        var filteredMakers = await catalogRepository.GetMakersFilters(param);
-
-        var allParamValues = await catalogRepository.GetParamValuesFilters(emptyParams);
-        var filteredParamValues = await catalogRepository.GetParamValuesFilters(param);
-
-        var model = new ProductListModel();
-
-        model.PageNumber = param.PageNumber;
-        model.PageSize = param.PageSize;
-        model.TotalCount = await catalogRepository.GetProductsTotalCount(param);
-        model.CurrentCount = products.Count;
-
-        ///Формируем выходную модель товаров
-        model.Products = MapProducts(products);
-        //Список фильтров - производитель
-        model.Filters.Makers = MapMakers(param.Makers, allMakers, filteredMakers);
-        ///Выходной набор фильтров
-        model.Filters.Params = MapParamValues(allParamValues, filteredParamValues, param.Params);
-
-        return model;
     }
 
-    /// <summary>
-    /// 
-    /// Добавить проверку
-    /// 
-    /// если фильтр передан только одного типа
-    /// Makers || Params(1 param)
-    /// тогда значения этого одного фильтра не выключаются
-    /// 
-    /// если передано больше одного
-    /// 
-    /// </summary>
+    private IReadOnlyCollection<ProductModel> FilterProducts(ProductParams param, IReadOnlyCollection<ProductModel> products)
+    {
+        var productsQuery = products.AsEnumerable();
+        {
+            if (param.Makers.HasAny())
+            {
+                productsQuery = productsQuery.Where(x => param.Makers.Contains(x.MakerId));
+            }
 
+            foreach (var filter in param.Params)
+            {
+                productsQuery = productsQuery.Where(p => p.ParamGroups
+                    .Any(pg => pg.Params.Any(pv => filter.ParamId == pv.ParamId && filter.Values.Contains(pv.Value))));
+            }
 
+            if (param.HasStars)
+            {
+                productsQuery = productsQuery.Where(p => p.Stars > 0);
+            }
+            if (param.HasReviews)
+            {
+                productsQuery = productsQuery.Where(p => p.ReviewsCount > 0);
+            }
+        }
 
+        return productsQuery.ToArray();
+    }
 
     private IReadOnlyCollection<ProductModel> MapProducts(IReadOnlyCollection<Product> products)
     {
@@ -104,34 +118,72 @@ internal class CatalogProductTypeProducts(ICatalogRepository catalogRepository) 
         .ToArray();
     }
 
-    private IReadOnlyCollection<MakerFilterModel> MapMakers(
-        IReadOnlyCollection<int> filterMakers,
-        IReadOnlyCollection<Maker> allMakers,
-        IReadOnlyCollection<Maker> filteredMakers)
+    private IReadOnlyCollection<ProductModel> SortAndPaginateProducts(ProductParams param, IReadOnlyCollection<ProductModel> products)
     {
-        var resultMakers = allMakers
+        var productsQuery = products.AsEnumerable();
+
+        if (param.ProductsSorting == Interfaces.Enum.ProductsSorting.PriceAscending)
+        {
+            productsQuery = productsQuery.OrderBy(x => x.Price).ThenBy(x => x.MakerName).ThenBy(x => x.Name);
+        }
+        else if (param.ProductsSorting == Interfaces.Enum.ProductsSorting.PriceDescending)
+        {
+            productsQuery = productsQuery.OrderByDescending(x => x.Price).ThenBy(x => x.MakerName).ThenBy(x => x.Name);
+        }
+        else if (param.ProductsSorting == Interfaces.Enum.ProductsSorting.MostPopular)
+        {
+            productsQuery = productsQuery.OrderByDescending(x => x.SalesCount).ThenBy(x => x.MakerName).ThenBy(x => x.Name);
+        }
+        else if (param.ProductsSorting == Interfaces.Enum.ProductsSorting.MostReviewed)
+        {
+            productsQuery = productsQuery.OrderByDescending(x => x.ReviewsCount).ThenBy(x => x.MakerName).ThenBy(x => x.Name);
+        }
+        else if (param.ProductsSorting == Interfaces.Enum.ProductsSorting.MostStar)
+        {
+            productsQuery = productsQuery.OrderByDescending(x => x.Stars).ThenBy(x => x.MakerName).ThenBy(x => x.Name);
+        }
+        else
+        {
+            productsQuery = productsQuery.OrderBy(x => x.MakerName).ThenBy(x => x.Name);
+        }
+
+        return productsQuery
+            .Skip(((param.PageNumber >= param.PageNumber ? param.PageNumber : 1) -1 ) * param.PageSize)
+            .Take(param.PageSize)
+            .ToArray();
+    }
+
+    private IReadOnlyCollection<MakerFilterModel> GetMakers(IReadOnlyCollection<ProductModel> products)
+    {
+        var resultMakers = products
+            .Select(m => new
+            {
+                m.MakerId,
+                m.MakerName,
+            })
+            .Distinct()
             .Select(x => new MakerFilterModel
             {
                 Id = x.MakerId,
-                Name = x.Name,
+                Name = x.MakerName,
             })
             .ToArray();
-
-        foreach(var maker in resultMakers)
-        {
-            maker.IsSelected = filterMakers.Contains(maker.Id);
-            maker.IsEnabled = maker.IsSelected ? true : filteredMakers.Any(m => m.MakerId == maker.Id);
-        }
 
         return resultMakers;
     }
 
-    private IReadOnlyCollection<ProductParamFilterModel> MapParamValues(
-        IReadOnlyCollection<ParamValueFilterModel> allParamValues,
-        IReadOnlyCollection<ParamValueFilterModel> filteredParamValues,
-        IReadOnlyCollection<ProductFilterParam> filters)
+    private IReadOnlyCollection<ProductParamFilterModel> GetParamValues(IReadOnlyCollection<ProductModel> products)
     {
-        var results = allParamValues
+        var results = products
+            .SelectMany(p => p.ParamGroups)
+            .SelectMany(pg => pg.Params)
+            .Select(pv => new
+            {
+                pv.ParamId,
+                pv.ParamName,
+                pv.Value
+            })
+            .Distinct()
             .GroupBy(x => new
             {
                 x.ParamId,
@@ -149,23 +201,101 @@ internal class CatalogProductTypeProducts(ICatalogRepository catalogRepository) 
                 }).ToArray()
             }).ToArray();
 
-        if (filters != null && filters.Any())
-        {
-            //Помечаем выбранные и недоступные фильтры
-            foreach (var param in results)
-            {
-                foreach (var value in param.Values)
-                {
-                    bool isSelected = filters.Any(f => f.ParamId == param.ParamId && f.Values.Any(fv => fv == value.Value));
-                    bool IsEnabled = filteredParamValues.Any(fpv => fpv.ParamId == param.ParamId && fpv.Value == value.Value);
-
-                    value.IsSelected = isSelected;
-                    value.IsEnabled = isSelected ? true : IsEnabled;
-                }
-            }
-        }
 
         return results;
     }
 
+
+    private record PreparedFilters(IReadOnlyCollection<MakerFilterModel> Makers, IReadOnlyCollection<ProductParamFilterModel> ParamValues);
+    private PreparedFilters PrepareFilters(ProductParams param, 
+        IReadOnlyCollection<ProductModel> filteredProducts, 
+        IReadOnlyCollection<MakerFilterModel> allMakers,
+        IReadOnlyCollection<ProductParamFilterModel> allParamValues)
+    {
+        if (param.Makers.HasNoOne() && param.Params.HasNoOne() && param.HasStars == false && param.HasReviews == false)
+        {
+            foreach (var makerFilter in allMakers)
+            {
+                makerFilter.IsSelected = false;
+                makerFilter.IsEnabled = true;
+
+                makerFilter.Count = filteredProducts.Count(p => p.MakerId == makerFilter.Id);
+            }
+            foreach (var paramValueFilter in allParamValues)
+            {
+                foreach (var valueFilter in paramValueFilter.Values)
+                {
+                    valueFilter.IsSelected = false;
+                    valueFilter.IsEnabled = true;
+
+                    valueFilter.Count = filteredProducts
+                        .Count(p => p.ParamGroups
+                        .Any(pg => pg.Params
+                        .Any(pv => pv.ParamId == paramValueFilter.ParamId && pv.Value == valueFilter.Value)));
+                }
+            }
+        }
+        else
+        {
+            var filteredMakers = filteredProducts.Select(p => p.MakerId).Distinct().ToArray();
+            foreach (var makerFilter in allMakers)
+            {
+                makerFilter.IsSelected = param.Makers.Contains(makerFilter.Id);
+
+                makerFilter.Count = filteredProducts.Count(p => p.MakerId == makerFilter.Id);
+
+                if (param.Makers.HasAny() && param.Params.HasNoOne() && param.HasStars == false && param.HasReviews == false)
+                {
+                    makerFilter.IsEnabled = true;
+                }
+                else
+                {
+                    makerFilter.IsEnabled = filteredMakers.Contains(makerFilter.Id);
+                }
+            }
+
+            var filteredParamValues = GetParamValues(filteredProducts);
+            foreach (var paramValueFilter in allParamValues)
+            {
+                var inputFilterParam = param.Params.FirstOrDefault(p => p.ParamId == paramValueFilter.ParamId);
+                paramValueFilter.IsSelected = inputFilterParam != null;
+
+                foreach (var valueFilter in paramValueFilter.Values)
+                {
+                    if (inputFilterParam != null)
+                    {
+                        valueFilter.IsSelected = inputFilterParam.Values.Contains(valueFilter.Value);
+                    }
+
+                    valueFilter.Count = filteredProducts
+                        .Count(p => p.ParamGroups
+                        .Any(pg => pg.Params
+                        .Any(pv => pv.ParamId == paramValueFilter.ParamId && pv.Value == valueFilter.Value)));
+
+                    if (paramValueFilter.IsSelected &&
+                        param.Makers.HasNoOne() && param.Params.HasOne() && param.HasStars == false && param.HasReviews == false)
+                    {
+                        valueFilter.IsEnabled = true;
+                    }
+                    else
+                    {
+                        valueFilter.IsEnabled = filteredParamValues
+                            .Any(fp => fp.ParamId == paramValueFilter.ParamId && fp.Values.Any(v => v.Value == valueFilter.Value));
+                    }
+                }
+            }
+        }
+
+        allMakers = allMakers.OrderByDescending(m => m.IsSelected).ThenByDescending(m => m.IsEnabled).ThenBy(m => m.Name).ToArray();
+        allParamValues = allParamValues
+                .OrderByDescending(m => m.IsSelected).ThenBy(m => m.ParamName)
+                .Select(p =>
+                {
+                    p.Values = p.Values.OrderByDescending(m => m.IsSelected).ThenByDescending(m => m.IsEnabled).ThenBy(m => m.Value).ToArray();
+                    return p;
+                })
+                .ToArray();
+
+        return new PreparedFilters(allMakers, allParamValues);
+    }
 }

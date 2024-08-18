@@ -86,7 +86,6 @@ internal class ClientService(
             return clientResult.MapTo<Client, bool>();
         }
         var client = clientResult.Value;
-
         if (client.Phone == phone)
         {
             return Results.Conflict<bool>($"Клиент '{clientId}' уже имеет номер телефона '{phone}'");

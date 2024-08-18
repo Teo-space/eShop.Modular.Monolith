@@ -21,7 +21,8 @@ internal class TokenRepository(IClientsDbContext clientsDbContext, IClientReposi
         {
             return Results.InvalidOperation<ClientToken>($"Токен ('{clientId}', '{tokenId}') уже использован");
         }
-        if (token.ValidFrom < DateTime.Now || token.ValidTo > DateTime.Now)
+
+        if (DateTime.Now < token.ValidFrom || DateTime.Now > token.ValidTo)
         {
             return Results.InvalidOperation<ClientToken>($"Токен ('{clientId}', '{tokenId}') не актуален или устарел");
         }

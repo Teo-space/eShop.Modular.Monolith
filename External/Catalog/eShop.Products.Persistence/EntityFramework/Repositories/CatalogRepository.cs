@@ -1,11 +1,11 @@
 ﻿using eShop.Products.Domain.Models;
-using eShop.Products.Interfaces.DbContexts;
 using eShop.Products.Interfaces.Repositories;
+using eShop.Products.Persistence.EntityFramework.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace eShop.Products.Persistence.EntityFramework.Repositories;
 
-internal class CatalogRepository(ICatalogDbContext catalogDbContext) : ICatalogRepository
+internal class CatalogRepository(CatalogDbContext catalogDbContext) : ICatalogRepository
 {
     public async Task<Result<ProductGroup>> GetProductGroup(int productGroupId)
     {
@@ -13,7 +13,7 @@ internal class CatalogRepository(ICatalogDbContext catalogDbContext) : ICatalogR
             .AsNoTracking()
             .Where(x => x.ProductGroupId == productGroupId)
             .FirstOrDefaultAsync();
-        if(prductGroup == null)
+        if (prductGroup == null)
         {
             return Results.NotFound<ProductGroup>($"Товарная подгруппа {productGroupId} не найдена");
         }
@@ -67,7 +67,7 @@ internal class CatalogRepository(ICatalogDbContext catalogDbContext) : ICatalogR
             .Include(x => x.Maker)
             .FirstOrDefaultAsync();
 
-        if(product == null)
+        if (product == null)
         {
             return Results.NotFound<Product>($"Товар '{productd}' не найден");
         }

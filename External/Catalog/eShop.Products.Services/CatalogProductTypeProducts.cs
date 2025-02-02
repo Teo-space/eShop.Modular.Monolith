@@ -1,4 +1,5 @@
 ﻿using eShop.Products.Domain.Models;
+using eShop.Products.Interfaces.Enum;
 using eShop.Products.Interfaces.Params.Catalog;
 using eShop.Products.Interfaces.Repositories;
 using eShop.Products.Interfaces.Services;
@@ -6,6 +7,9 @@ using eShop.Products.Models.Catalog.ProductList;
 
 namespace eShop.Products.Services;
 
+/// <summary>
+/// Каталог - выдача товаров с фильтрацией
+/// </summary>
 internal class CatalogProductTypeProducts(ICatalogRepository catalogRepository) : ICatalogProductTypeProducts
 {
     public async Task<Result<ProductListModel>> GetProductTypeProducts(ProductParams param)
@@ -18,7 +22,7 @@ internal class CatalogProductTypeProducts(ICatalogRepository catalogRepository) 
 
         var allDomainProducts = await catalogRepository.GetProducts(param.ProductTypeId);
 
-        var allProducts = MapProducts(allDomainProducts);
+        var allProducts = MapProducts(param, allDomainProducts);
         var allMakers = GetMakers(allProducts);
         var allParamValues = GetParamValues(allProducts);
 
@@ -74,7 +78,7 @@ internal class CatalogProductTypeProducts(ICatalogRepository catalogRepository) 
         return productsQuery.ToArray();
     }
 
-    private IReadOnlyCollection<ProductModel> MapProducts(IReadOnlyCollection<Product> products)
+    private IReadOnlyCollection<ProductModel> MapProducts(ProductParams param, IReadOnlyCollection<Product> products)
     {
         return products
         .Select(x => new ProductModel
@@ -85,12 +89,19 @@ internal class CatalogProductTypeProducts(ICatalogRepository catalogRepository) 
             Number = x.Number,
             Name = x.Name,
             Description = x.Description,
-            Price = x.Price,
-            Availability = x.Availability,
-            SalesCount = x.SalesCount,
-            Stars = x.Stars,
-            StarsCount = x.StarsCount,
-            ReviewsCount = x.ReviewsCount,
+
+            Price = param.RegionId.HasValue
+                    ? x.Warehouses.FirstOrDefault(w => w.RegionId == param.RegionId)?.Price ?? 0
+                    : x.Warehouses.Any() ? x.Warehouses.Max(w => w.Price) : 0,
+
+            Availability = param.RegionId.HasValue
+                    ? x.Warehouses.FirstOrDefault(w => w.RegionId == param.RegionId)?.Quantity ?? 0
+                    : x.Warehouses.Sum(w => w.Quantity),
+
+            SalesCount = x.Filters.SalesCount,
+            Stars = x.Filters.Stars,
+            StarsCount = x.Filters.StarsCount,
+            ReviewsCount = x.Filters.ReviewsCount,
 
             ParamGroups = x.ParamValues
             .GroupBy(x => new
@@ -122,23 +133,23 @@ internal class CatalogProductTypeProducts(ICatalogRepository catalogRepository) 
     {
         var productsQuery = products.AsEnumerable();
 
-        if (param.ProductsSorting == Interfaces.Enum.ProductsSorting.PriceAscending)
+        if (param.ProductsSorting == ProductsSorting.PriceAscending)
         {
             productsQuery = productsQuery.OrderBy(x => x.Price).ThenBy(x => x.MakerName).ThenBy(x => x.Name);
         }
-        else if (param.ProductsSorting == Interfaces.Enum.ProductsSorting.PriceDescending)
+        else if (param.ProductsSorting == ProductsSorting.PriceDescending)
         {
             productsQuery = productsQuery.OrderByDescending(x => x.Price).ThenBy(x => x.MakerName).ThenBy(x => x.Name);
         }
-        else if (param.ProductsSorting == Interfaces.Enum.ProductsSorting.MostPopular)
+        else if (param.ProductsSorting == ProductsSorting.MostPopular)
         {
             productsQuery = productsQuery.OrderByDescending(x => x.SalesCount).ThenBy(x => x.MakerName).ThenBy(x => x.Name);
         }
-        else if (param.ProductsSorting == Interfaces.Enum.ProductsSorting.MostReviewed)
+        else if (param.ProductsSorting == ProductsSorting.MostReviewed)
         {
             productsQuery = productsQuery.OrderByDescending(x => x.ReviewsCount).ThenBy(x => x.MakerName).ThenBy(x => x.Name);
         }
-        else if (param.ProductsSorting == Interfaces.Enum.ProductsSorting.MostStar)
+        else if (param.ProductsSorting == ProductsSorting.MostStar)
         {
             productsQuery = productsQuery.OrderByDescending(x => x.Stars).ThenBy(x => x.MakerName).ThenBy(x => x.Name);
         }
@@ -148,7 +159,7 @@ internal class CatalogProductTypeProducts(ICatalogRepository catalogRepository) 
         }
 
         return productsQuery
-            .Skip(((param.PageNumber >= param.PageNumber ? param.PageNumber : 1) -1 ) * param.PageSize)
+            .Skip(((param.PageNumber >= param.PageNumber ? param.PageNumber : 1) - 1) * param.PageSize)
             .Take(param.PageSize)
             .ToArray();
     }
@@ -207,8 +218,8 @@ internal class CatalogProductTypeProducts(ICatalogRepository catalogRepository) 
 
 
     private record PreparedFilters(IReadOnlyCollection<MakerFilterModel> Makers, IReadOnlyCollection<ProductParamFilterModel> ParamValues);
-    private PreparedFilters PrepareFilters(ProductParams param, 
-        IReadOnlyCollection<ProductModel> filteredProducts, 
+    private PreparedFilters PrepareFilters(ProductParams param,
+        IReadOnlyCollection<ProductModel> filteredProducts,
         IReadOnlyCollection<MakerFilterModel> allMakers,
         IReadOnlyCollection<ProductParamFilterModel> allParamValues)
     {

@@ -11,16 +11,13 @@ TODO
 Расценка
 Количество
 Промоакции
-
-
 */
-
 internal class BasketService(
     IBasketRepository basketRepository,
     IClientsSharedService clientsSharedService,
     IProductsSharedService productsSharedService
-
-    ) : IBasketService
+)
+    : IBasketService
 {
 
     public async Task<Result<BasketPositionModel>> Get(long clientId, int productId)

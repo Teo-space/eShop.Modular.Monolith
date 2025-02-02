@@ -1,8 +1,8 @@
-﻿using eShop.Products.Domain.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using eShop.Products.Domain.Models.Params;
 
-namespace eShop.Products.Persistence.EntityFramework.Configurations;
+namespace eShop.Products.Persistence.EntityFramework.Configurations.Params;
 
 internal class ProductParamValueConf : IEntityTypeConfiguration<ProductParamValue>
 {

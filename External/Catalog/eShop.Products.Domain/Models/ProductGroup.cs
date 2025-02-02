@@ -2,7 +2,7 @@
 
 namespace eShop.Products.Domain.Models;
 
-public class ProductGroup : IDeletable
+public sealed class ProductGroup : IDeletable
 {
     public int ProductGroupId { get; set; }
 
@@ -13,4 +13,31 @@ public class ProductGroup : IDeletable
     public string Name { get; set; }
 
     public string Description { get; set; }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private ProductGroup() { }
+
+    public static ProductGroup Create(ProductGroup parentProductGroup, string name, string description)
+    {
+        return new ProductGroup
+        {
+            ParentProductGroupId = parentProductGroup?.ProductGroupId ?? 0,
+            Name = name,
+            Description = description,
+            IsDeleted = false,
+        };
+    }
+
+    public static ProductGroup CreateExists(int productGroupId, ProductGroup parentProductGroup, string name, string description)
+    {
+        return new ProductGroup
+        {
+            ProductGroupId = productGroupId,
+            ParentProductGroupId = parentProductGroup?.ProductGroupId ?? 0,
+            Name = name,
+            Description = description,
+            IsDeleted = false,
+        };
+    }
 }

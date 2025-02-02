@@ -15,10 +15,6 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
-	</ItemGroup>
-	
-	<ItemGroup>
 	  <ProjectReference Include="..\eShop.Products.Domain\eShop.Products.Domain.csproj" />
 	  <ProjectReference Include="..\eShop.Products.Models\eShop.Products.Models.csproj" />
 	</ItemGroup>

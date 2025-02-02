@@ -2,9 +2,11 @@
 
 namespace eShop.Products.Interfaces.Params.Catalog;
 
-public record ProductParams
+public sealed record ProductParams
 {
     public int ProductTypeId { get; set; }
+
+    public int? RegionId { get; set; }
 
     public ProductsSorting ProductsSorting { get; set; } = ProductsSorting.PriceAscending;
 

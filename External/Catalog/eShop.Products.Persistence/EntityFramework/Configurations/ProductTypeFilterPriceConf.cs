@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace eShop.Products.Persistence.EntityFramework.Configurations;
 
-internal class ProductFilterPriceConf : IEntityTypeConfiguration<ProductFilterPrice>
+internal class ProductTypeFilterPriceConf : IEntityTypeConfiguration<ProductTypeFilterPrice>
 {
-    public void Configure(EntityTypeBuilder<ProductFilterPrice> builder)
+    public void Configure(EntityTypeBuilder<ProductTypeFilterPrice> builder)
     {
         builder.HasKey(x => new
         {
-            x.ProductId,
+            x.ProductTypeId,
             x.PriceFrom,
             x.PriceTo,
         });

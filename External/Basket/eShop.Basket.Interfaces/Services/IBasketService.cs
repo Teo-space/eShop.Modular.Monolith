@@ -1,5 +1,4 @@
-﻿using eShop.Basket.Domain;
-using eShop.Basket.Models;
+﻿using eShop.Basket.Models;
 
 namespace eShop.Basket.Interfaces.Services;
 

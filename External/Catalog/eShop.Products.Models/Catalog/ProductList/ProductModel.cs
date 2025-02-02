@@ -17,14 +17,14 @@ public sealed class ProductModel
     /// <summary>
     /// Цена
     /// </summary>
-    public double Price { get; set; }
+    public decimal Price { get; set; }
     /// <summary>
     /// Наличие в магазинах
     /// </summary>
     public int Availability { get; set; }
 
     /// <summary>
-    /// Средняя оценка в отзывах
+    /// Количество продаж
     /// </summary>
     public double SalesCount { get; set; }
     /// <summary>
@@ -40,7 +40,7 @@ public sealed class ProductModel
     /// </summary>
     public int ReviewsCount { get; set; }
 
-    public IReadOnlyCollection<ProductParamGroupModel> ParamGroups  { get; set; } = new List<ProductParamGroupModel>();
+    public IReadOnlyCollection<ProductParamGroupModel> ParamGroups { get; set; } = new List<ProductParamGroupModel>();
 }
 
 public sealed class ProductParamGroupModel

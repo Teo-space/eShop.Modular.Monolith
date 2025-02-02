@@ -1,8 +1,9 @@
 ﻿using eShop.Products.Domain.Interfaces;
+using eShop.Products.Domain.Models.Params;
 
 namespace eShop.Products.Domain.Models;
 
-public class Product : IDeletable
+public sealed class Product : IDeletable
 {
     public int ProductId { get; set; }
     public int ProductTypeId { get; set; }
@@ -19,33 +20,14 @@ public class Product : IDeletable
 
     public string Description { get; set; }
 
+    public ProductFilters Filters { get; set; } = new ProductFilters();
 
     /// <summary>
-    /// Цена
+    /// Наличие на складах
     /// </summary>
-    public double Price { get; set; }
+    public List<ProductWarehouse> Warehouses { get; private set; } = new List<ProductWarehouse>();
     /// <summary>
-    /// Наличие в магазинах
+    /// Значения параметров
     /// </summary>
-    public int Availability { get; set; }
-
-    /// <summary>
-    /// Средняя оценка в отзывах
-    /// </summary>
-    public double SalesCount { get; set; }
-    /// <summary>
-    /// Средняя оценка в отзывах
-    /// </summary>
-    public double Stars { get; set; }
-    /// <summary>
-    /// Количество оценок
-    /// </summary>
-    public int StarsCount { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public int ReviewsCount { get; set; }
-
-
-    public HashSet<ProductParamValue> ParamValues { get; set; }
+    public List<ProductParamValue> ParamValues { get; private set; } = new List<ProductParamValue>();
 }

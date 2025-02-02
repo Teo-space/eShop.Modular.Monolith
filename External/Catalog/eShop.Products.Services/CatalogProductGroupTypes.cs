@@ -5,6 +5,9 @@ using eShop.Products.Models.Catalog.ProductGroupTypes;
 
 namespace eShop.Products.Services;
 
+/// <summary>
+/// Каталог - Типы товаров в группе
+/// </summary>
 internal class CatalogProductGroupTypes(ICatalogRepository catalogRepository) : ICatalogProductGroupTypes
 {
     public async Task<Result<ProductGroupTypesModel>> GetProductGroupTypes(int productGroupId)

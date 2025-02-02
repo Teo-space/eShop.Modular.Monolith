@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using eShop.Basket.Domain;
 using Microsoft.EntityFrameworkCore;
-using eShop.Basket.Domain;
-using NUlid;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace eShop.Basket.Persistence.EntityFramework.Configurations;
 

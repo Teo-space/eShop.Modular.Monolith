@@ -5,6 +5,9 @@ using eShop.Products.Models.Catalog.ProductGroups;
 
 namespace eShop.Products.Services;
 
+/// <summary>
+/// Каталог - дерево товарных групп
+/// </summary>
 internal class CatalogProductGroupsTreeService(ICatalogRepository catalogRepository) : ICatalogProductGroupsTreeService
 {
     public Task<IReadOnlyCollection<ProductGroup>> GetProductGroups() => catalogRepository.GetProductGroups();

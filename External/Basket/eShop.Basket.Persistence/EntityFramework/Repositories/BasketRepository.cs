@@ -1,11 +1,11 @@
 ﻿using eShop.Basket.Domain;
-using eShop.Basket.Interfaces.DbContexts;
 using eShop.Basket.Interfaces.Repositories;
+using eShop.Basket.Persistence.EntityFramework.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace eShop.Basket.Persistence.EntityFramework.Repositories;
 
-internal class BasketRepository(IBasketDbContext basketDbContext) : IBasketRepository
+internal class BasketRepository(BasketDbContext basketDbContext) : IBasketRepository
 {
     public async Task<Result<BasketPosition>> Get(long clientId, int productId)
     {
@@ -13,7 +13,7 @@ internal class BasketRepository(IBasketDbContext basketDbContext) : IBasketRepos
             .AsNoTracking()
             .FirstOrDefaultAsync(bp => bp.ClientId == clientId && bp.ProductId == productId);
 
-        if(basketPosition == null)
+        if (basketPosition == null)
         {
             return Results.NotFound<BasketPosition>($"Позиция козины ({clientId}, {productId}) не найдена");
         }
@@ -33,7 +33,7 @@ internal class BasketRepository(IBasketDbContext basketDbContext) : IBasketRepos
 
     public async Task<Result<BasketPosition>> Add(long clientId, int productId, string productName, double price, int quantity)
     {
-        if(await basketDbContext.BasketPositions.AnyAsync(bp => bp.ClientId == clientId && bp.ProductId == productId))
+        if (await basketDbContext.BasketPositions.AnyAsync(bp => bp.ClientId == clientId && bp.ProductId == productId))
         {
             return Results.Conflict<BasketPosition>($"Позиция козины ({clientId}, {productId}) уже существует");
         }

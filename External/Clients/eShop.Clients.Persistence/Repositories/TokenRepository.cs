@@ -1,11 +1,11 @@
 ﻿using eShop.Clients.Domain.Models;
-using eShop.Clients.Interfaces.DbContexts;
 using eShop.Clients.Interfaces.Repositories;
+using eShop.Clients.Persistence.EntityFramework.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace eShop.Clients.Persistence.Repositories;
 
-internal class TokenRepository(IClientsDbContext clientsDbContext, IClientRepository clientRepository) : ITokenRepository
+internal class TokenRepository(ClientsDbContext clientsDbContext) : ITokenRepository
 {
     public async Task<Result<ClientToken>> GetTokenAsync(long clientId, int tokenId)
     {
@@ -32,7 +32,7 @@ internal class TokenRepository(IClientsDbContext clientsDbContext, IClientReposi
 
     public async Task<Result<int>> CreateAsync(long clientId, int tokenType, string value)
     {
-        if(await clientsDbContext.ClientTokens
+        if (await clientsDbContext.ClientTokens
             .Where(x => x.ClientId == clientId)
             .Where(x => x.Created > DateTime.Now.AddMinutes(-1))
             .AnyAsync())

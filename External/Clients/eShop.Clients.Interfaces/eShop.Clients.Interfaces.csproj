@@ -16,7 +16,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="NUlid" Version="1.7.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
 	</ItemGroup>
 
 	<ItemGroup>

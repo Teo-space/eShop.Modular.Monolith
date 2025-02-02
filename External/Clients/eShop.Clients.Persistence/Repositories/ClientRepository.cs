@@ -1,30 +1,30 @@
 ﻿using eShop.Clients.Domain.Models;
-using eShop.Clients.Interfaces.DbContexts;
 using eShop.Clients.Interfaces.Repositories;
+using eShop.Clients.Persistence.EntityFramework.DbContexts;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 
 namespace eShop.Clients.Persistence.Repositories;
 
-internal class ClientRepository(IClientsDbContext clientsDbContext) : IClientRepository
+internal class ClientRepository(ClientsDbContext clientsDbContext) : IClientRepository
 {
-    public async Task<Result<Client>> GetClientByIdAsync(long clientId) 
-        => await clientsDbContext.Clients.FirstOrDefaultAsync(x => x.ClientId == clientId) 
+    public async Task<Result<Client>> GetClientByIdAsync(long clientId)
+        => await clientsDbContext.Clients.FirstOrDefaultAsync(x => x.ClientId == clientId)
         ?? Results.NotFound<Client>($"Клиент '{clientId}' не найден");
 
-    public async Task<Result<Client>> GetClientByPhoneAsync(long phone) 
+    public async Task<Result<Client>> GetClientByPhoneAsync(long phone)
         => await clientsDbContext.Clients.FirstOrDefaultAsync(x => x.Phone == phone)
         ?? Results.NotFound<Client>($"Клиент с этим '{phone}' номером телефона не найден");
 
-    public async Task<Result<Client>> GetClientByEmailAsync(string email) 
+    public async Task<Result<Client>> GetClientByEmailAsync(string email)
         => await clientsDbContext.Clients.FirstOrDefaultAsync(x => x.Email == email)
         ?? Results.NotFound<Client>($"Клиент с этим '{email}' адресом почты не найден");
 
-    public async Task<Result<Client>> GetClientByUserNameAsync(string userName) 
+    public async Task<Result<Client>> GetClientByUserNameAsync(string userName)
         => await clientsDbContext.Clients.FirstOrDefaultAsync(x => x.UserName == userName)
         ?? Results.NotFound<Client>($"Клиент не найден по UserName: {userName}");
 
-    public async Task<Result<T>> GetClientByIdAsync<T>(long clientId) where T: class
+    public async Task<Result<T>> GetClientByIdAsync<T>(long clientId) where T : class
         => await clientsDbContext.Clients
         .Where(x => x.ClientId == clientId)
         .ProjectToType<T>()

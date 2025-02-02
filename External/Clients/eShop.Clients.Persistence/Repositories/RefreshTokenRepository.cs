@@ -1,21 +1,21 @@
 ﻿using eShop.Clients.Domain.Models;
-using eShop.Clients.Interfaces.DbContexts;
 using eShop.Clients.Interfaces.Repositories;
+using eShop.Clients.Persistence.EntityFramework.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using NUlid;
 
 namespace eShop.Clients.Persistence.Repositories;
 
-internal class RefreshTokenRepository(IClientsDbContext clientsDbContext) : IRefreshTokenRepository
+internal class RefreshTokenRepository(ClientsDbContext clientsDbContext) : IRefreshTokenRepository
 {
     public async Task<Result<RefreshToken>> GetByIdAsync(Ulid refreshTokenId)
     {
         var refreshToken = await clientsDbContext.RefreshTokens.FirstOrDefaultAsync(x => x.RefreshTokenId == refreshTokenId);
-        if(refreshToken == null)
+        if (refreshToken == null)
         {
             return Results.NotFound<RefreshToken>($"Refresh токен '{refreshTokenId}' не найден");
         }
-        if(refreshToken.IsUsed)
+        if (refreshToken.IsUsed)
         {
             return Results.InvalidOperation<RefreshToken>($"Refresh Token '{refreshTokenId}' уже был использован");
         }
@@ -39,7 +39,7 @@ internal class RefreshTokenRepository(IClientsDbContext clientsDbContext) : IRef
         return refreshToken.RefreshTokenId;
     }
 
-    public Task  MarkAsUsed(RefreshToken refreshToken)
+    public Task MarkAsUsed(RefreshToken refreshToken)
     {
         refreshToken.IsUsed = true;
         return clientsDbContext.SaveChangesAsync();

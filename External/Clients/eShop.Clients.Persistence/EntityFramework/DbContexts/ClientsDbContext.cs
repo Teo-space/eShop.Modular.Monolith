@@ -1,11 +1,10 @@
 ﻿using eShop.Clients.Domain.Models;
-using eShop.Clients.Interfaces.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace eShop.Clients.Persistence.EntityFramework.DbContexts;
 
-internal class ClientsDbContext : DbContext, IClientsDbContext
+internal class ClientsDbContext : DbContext
 {
     public DbSet<Client> Clients { get; init; }
     public DbSet<ClientToken> ClientTokens { get; init; }

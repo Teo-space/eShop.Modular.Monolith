@@ -7,13 +7,12 @@ public class Order
     public long ClientId { get; set; }
     public long OrderId { get; set; }
 
-    public DateTime CreatedAt {  get; set; }
+    public DateTime CreatedAt { get; set; }
 
     /// <summary>
     /// Статус заказа
     /// </summary>
     public OrderStatus Status { get; private set; }
-
 
     /// <summary>
     /// Информация о клиенте
@@ -29,7 +28,6 @@ public class Order
     /// Оплата
     /// </summary>
     public OrderPayment Payment { get; private set; }
-
 
     public HashSet<OrderPosition> Positions { get; private set; } = new HashSet<OrderPosition>();
 }

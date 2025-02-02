@@ -1,0 +1,62 @@
+<Solution>
+  <Folder Name="/External/">
+    <Project Path="ConnectionNames/ConnectionNames.csproj" />
+  </Folder>
+  <Folder Name="/External/Basket/">
+    <Project Path="External/Basket/eShop.Basket.Persistence/eShop.Basket.Persistence.csproj" />
+  </Folder>
+  <Folder Name="/External/Basket/Core/">
+    <Project Path="External/Basket/eShop.Basket.Domain/eShop.Basket.Domain.csproj" />
+    <Project Path="External/Basket/eShop.Basket.Interfaces/eShop.Basket.Interfaces.csproj" />
+    <Project Path="External/Basket/eShop.Basket.Models/eShop.Basket.Models.csproj" />
+    <Project Path="External/Basket/eShop.Basket.Services/eShop.Basket.Services.csproj" />
+  </Folder>
+  <Folder Name="/External/Catalog/">
+    <Project Path="External/Catalog/eShop.Products.Persistence/eShop.Products.Persistence.csproj" />
+    <Project Path="External/Catalog/eShop.Products.Shared/eShop.Products.Shared.csproj" />
+  </Folder>
+  <Folder Name="/External/Catalog/Core/">
+    <Project Path="External/Catalog/eShop.Products.Domain/eShop.Products.Domain.csproj" />
+    <Project Path="External/Catalog/eShop.Products.Interfaces/eShop.Products.Interfaces.csproj" />
+    <Project Path="External/Catalog/eShop.Products.Models/eShop.Products.Models.csproj" />
+    <Project Path="External/Catalog/eShop.Products.Services/eShop.Products.Services.csproj" />
+  </Folder>
+  <Folder Name="/External/Clients/">
+    <Project Path="External/Clients/eShop.Clients.Auth.Jwt/eShop.Clients.Auth.Jwt.csproj" />
+    <Project Path="External/Clients/eShop.Clients.Persistence/eShop.Clients.Persistence.csproj" />
+    <Project Path="External/Clients/eShop.Clients.Shared/eShop.Clients.Shared.csproj" />
+  </Folder>
+  <Folder Name="/External/Clients/Core/">
+    <Project Path="External/Clients/eShop.Clients.Domain/eShop.Clients.Domain.csproj" />
+    <Project Path="External/Clients/eShop.Clients.Interfaces/eShop.Clients.Interfaces.csproj" />
+    <Project Path="External/Clients/eShop.Clients.Models/eShop.Clients.Models.csproj" />
+    <Project Path="External/Clients/eShop.Clients.Services/eShop.Clients.Services.csproj" />
+  </Folder>
+  <Folder Name="/External/Deliveries/">
+    <Project Path="External/Deliveries/eShop.Deliveries.Domain/eShop.Deliveries.Domain.csproj" />
+    <Project Path="External/Deliveries/eShop.Deliveries.Interfaces/eShop.Deliveries.Interfaces.csproj" />
+  </Folder>
+  <Folder Name="/External/Orders/">
+    <Project Path="External/Orders/eShop.Order.Domain/eShop.Order.Domain.csproj" />
+    <Project Path="External/Orders/eShop.Order.Interfaces/eShop.Order.Interfaces.csproj" />
+  </Folder>
+  <Folder Name="/External/Payments/">
+    <Project Path="External/Payments/eShop.Payments.Domain/eShop.Payments.Domain.csproj" />
+    <Project Path="External/Payments/eShop.Payments.Interfaces/eShop.Payments.Interfaces.csproj" />
+  </Folder>
+  <Folder Name="/External/Reviews/">
+    <Project Path="External/Reviews/eShop.Reviews.Domain/eShop.Reviews.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Internal/" />
+  <Folder Name="/Internal/Documents/">
+    <Project Path="Internal/eShop.Documents.Domain/eShop.Documents.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Internal/Logistics/" />
+  <Folder Name="/Internal/Warehouse/" />
+  <Folder Name="/Shared/">
+    <Project Path="Shared/eShop.Shared.Interfaces/eShop.Shared.Interfaces.csproj" />
+  </Folder>
+  <Folder Name="/Элементы решения/">
+    <File Path="README.md" />
+  </Folder>
+</Solution>
